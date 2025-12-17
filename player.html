@@ -1,73 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>AnimeToki Player</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AnimeToki Streaming</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <style>
     body {
-      margin: 0;
-      background: #000;
-      color: #fff;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont;
-    }
-    .header {
-      padding: 14px;
-      text-align: center;
-      font-size: 18px;
-      font-weight: 600;
-      background: #0f0f0f;
+      margin:0;
+      background:#000;
     }
     iframe {
-      width: 100%;
-      height: calc(100vh - 52px);
-      border: none;
-    }
-    .error {
-      padding: 20px;
-      text-align: center;
-      color: #f44336;
+      width:100%;
+      height:100vh;
+      border:none;
     }
   </style>
 </head>
-
 <body>
-  <div class="header">AnimeToki Streaming</div>
-  <div id="container"></div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+<iframe id="player" allowfullscreen></iframe>
 
-    const params = new URLSearchParams(window.location.search);
-    const payload = params.get("data");
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready();
 
-    const container = document.getElementById("container");
+  const params = new URLSearchParams(window.location.search);
+  const fileId = params.get("id");
 
-    if (!payload) {
-      container.innerHTML = "<div class='error'>No payload received</div>";
-    } else {
-      /*
-        🔴 IMPORTANT:
-        এখানে এখন demo হিসেবে Google Drive embed URL ব্যবহার করছি।
-        পরের ধাপে আমরা payload decode করে dynamic Drive link বসাবো।
-      */
+  if (!fileId) {
+    document.body.innerHTML = "<h3 style='color:white;text-align:center;'>No file ID</h3>";
+  } else {
+    document.getElementById("player").src =
+      "https://drive.google.com/file/d/" + fileId + "/preview";
+  }
+</script>
 
-      const DRIVE_EMBED_URL =
-        "https://drive.google.com/file/d/FILE_ID/preview";
-
-      container.innerHTML = `
-        <iframe
-          src="${DRIVE_EMBED_URL}"
-          allow="autoplay"
-          allowfullscreen>
-        </iframe>
-      `;
-    }
-  </script>
 </body>
 </html>
