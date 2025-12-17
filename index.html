@@ -1,45 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>AnimeToki Mini App</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      background:#000;
-      color:#fff;
-      text-align:center;
-      font-family:sans-serif;
-    }
-    button {
-      padding:14px 25px;
-      font-size:18px;
-      background:#2196f3;
-      border:none;
-      border-radius:8px;
-      color:white;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>AnimeToki Mini App</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+body{
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+button{
+  padding:14px 40px;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+  background:#1e88e5;
+  color:white;
+}
+</style>
 </head>
 <body>
 
-<h2>AnimeToki Mini App</h2>
-
-<button onclick="openPlayer()">Continue</button>
+<div style="text-align:center">
+  <h2>AnimeToki Mini App</h2>
+  <button onclick="go()">Continue</button>
+</div>
 
 <script>
-  const tg = window.Telegram.WebApp;
-  tg.ready();
+const tg = window.Telegram.WebApp;
+tg.ready();
 
-  function openPlayer() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-    if (!id) {
-      alert("No payload found");
-      return;
-    }
-    window.location.href = "player.html?id=" + id;
+const payload = tg.initDataUnsafe?.start_param;
+
+function go(){
+  if(!payload){
+    tg.showAlert("No payload found");
+    return;
   }
+  window.location.href = "player.html?data=" + encodeURIComponent(payload);
+}
 </script>
 
 </body>
