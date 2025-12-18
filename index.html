@@ -7,134 +7,156 @@
 
   <style>
     :root{
-      --accent:#3b82f6;
-      --accent-dark:#1e293b;
+      --accent:#ef4444;
     }
 
-    body{
+    body {
       background:#0f172a;
       color:#e5e7eb;
-      font-family:Arial,sans-serif;
-      padding:16px;
+      font-family: Arial, sans-serif;
+      padding:18px;
       margin:0;
     }
 
-    /* ===== Animated Border (Poster Color) ===== */
-    .border-wrap{
-      padding:3px;
+    /* ===== CARD ===== */
+    .card {
+      background:#020617;
       border-radius:18px;
-      background:linear-gradient(
-        270deg,
-        var(--accent),
-        #000,
-        var(--accent-dark)
-      );
-      background-size:400% 400%;
-      animation:borderGlow 6s ease infinite;
+      overflow:hidden;
+      box-shadow:0 0 25px rgba(0,0,0,.8);
+      border:3px solid transparent;
+      animation:borderGlow 3s linear infinite;
+      background-clip:padding-box,border-box;
+      background-origin:border-box;
+      background-image:
+        linear-gradient(#020617,#020617),
+        linear-gradient(120deg,#000,var(--accent),#000);
     }
 
     @keyframes borderGlow{
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
+      to{background-position:200%}
     }
 
-    .card{
-      background:#020617;
-      border-radius:15px;
-      overflow:hidden;
-      box-shadow:0 0 22px rgba(0,0,0,.7);
-    }
-
-    .poster{
+    /* ===== POSTER ===== */
+    .poster {
       width:100%;
-      height:180px;
+      height:190px;
       object-fit:cover;
       object-position:center top;
       display:block;
     }
 
-    .content{
-      padding:14px;
+    .content {
+      padding:13px;
     }
 
-    .title{
+    .title {
       font-size:20px;
-      font-weight:800;
-      margin-bottom:10px;
+      font-weight:700;
+      margin-bottom:12px;
     }
 
-    .meta span{
+    .meta span {
       display:block;
       font-size:14px;
       font-weight:600;
       line-height:1.7;
-      opacity:.95;
     }
 
-    /* ===== Button uses SAME poster color ===== */
-    .play-btn{
-      margin-top:18px;
-      width:100%;
-      padding:12px;
+    /* ===== BUTTON ===== */
+    button {
+      background:linear-gradient(135deg,#dc2626,#7f1d1d);
       border:none;
-      border-radius:12px;
-      font-size:16px;
+      padding:11px;
       font-weight:800;
-      cursor:pointer;
+      border-radius:12px;
       color:white;
+      font-size:16px;
+      margin-top:18px;
+      cursor:pointer;
+      width:100%;
+      box-shadow:0 0 15px rgba(220,38,38,.6);
+    }
+
+    /* ===== LOADING POPUP ===== */
+    .loading-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.92);
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:10px;
-      background:linear-gradient(
-        135deg,
-        var(--accent),
-        var(--accent-dark)
-      );
-      box-shadow:0 10px 28px rgba(0,0,0,.6);
+      z-index:999;
+      opacity:0;
+      pointer-events:none;
+      transition:.3s ease;
+    }
+
+    .loading-overlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .loader-box{text-align:center}
+
+    .ring{
+      width:82px;
+      height:82px;
+      border-radius:50%;
+      border:4px solid rgba(255,255,255,.15);
+      border-top:4px solid var(--accent);
+      animation:spin 1.1s linear infinite;
+      margin:0 auto 18px;
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .loading-text{
+      font-size:16px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.5px;
     }
   </style>
 </head>
 
 <body>
 
-<div class="border-wrap">
-  <div class="card">
+<div class="card">
 
-    <img id="poster" class="poster" src="" alt="Poster">
+  <!-- POSTER -->
+  <img id="poster" class="poster">
 
-    <div class="content">
+  <div class="content">
+    <div class="title" id="anime">㊂ Anime Name</div>
 
-      <div class="title" id="anime">㊂ Anime Name</div>
-
-      <div class="meta">
-        <span id="episode">⊙ Episode: --</span>
-        <span>⊙ Audio: Japanese</span>
-        <span>⊙ Subtitle: English</span>
-        <span>⊙ Codec: HEVC</span>
-        <span id="resolution">⊙ Resolution: --</span>
-        <span>⊙ Source: AnimeToki.com</span>
-      </div>
-
-      <button class="play-btn" onclick="go()">
-        ▶️ <span>Watch</span>
-      </button>
-
+    <div class="meta">
+      <span id="episode">⊙ Episode: --</span>
+      <span>⊙ Audio: Japanese</span>
+      <span>⊙ Subtitle: English</span>
+      <span>⊙ Codec: HEVC</span>
+      <span id="resolution">⊙ Resolution: --</span>
+      <span>⊙ Source: AnimeToki.com</span>
     </div>
+
+    <button onclick="go()">▶️ Watch</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading" class="loading-overlay">
+  <div class="loader-box">
+    <div class="ring"></div>
+    <div class="loading-text">Loading Episode…</div>
   </div>
 </div>
 
 <script>
   const tg = Telegram.WebApp;
-  tg.ready();
-  tg.expand();
+  tg.ready(); tg.expand();
 
   const raw = tg.initDataUnsafe?.start_param;
-  if(!raw){
-    document.body.innerHTML="❌ Invalid request";
-    throw new Error("No payload");
-  }
+  if(!raw){ document.body.innerHTML="Invalid"; }
 
   const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime, episode, driveId, qual, poster] = decoded.split("|");
@@ -148,46 +170,28 @@
   const posterImg = document.getElementById("poster");
   posterImg.src = poster || "https://i.imgur.com/8RKXAIV.jpg";
 
-  /* ===== Extract DOMINANT COLOR from poster ===== */
-  function extractColor(img){
-    const c=document.createElement("canvas");
-    const x=c.getContext("2d");
-    c.width=img.naturalWidth;
-    c.height=img.naturalHeight;
-    x.drawImage(img,0,0);
-
-    const d=x.getImageData(0,0,c.width,c.height).data;
-    let r=0,g=0,b=0,n=0;
-
-    for(let i=0;i<d.length;i+=40){
-      r+=d[i]; g+=d[i+1]; b+=d[i+2];
-      n++;
-    }
-
-    r=Math.floor(r/n);
-    g=Math.floor(g/n);
-    b=Math.floor(b/n);
-
-    return { r,g,b };
-  }
-
-  posterImg.onload=()=>{
-    const {r,g,b} = extractColor(posterImg);
-
-    const accent = `rgb(${r},${g},${b})`;
-    const dark   = `rgb(${Math.floor(r*0.4)},${Math.floor(g*0.4)},${Math.floor(b*0.4)})`;
-
-    document.documentElement.style.setProperty("--accent",accent);
-    document.documentElement.style.setProperty("--accent-dark",dark);
+  /* 🎨 Extract color from poster */
+  posterImg.onload = () => {
+    const c = document.createElement("canvas");
+    const ctx = c.getContext("2d");
+    c.width = 20; c.height = 20;
+    ctx.drawImage(posterImg,0,0,20,20);
+    const d = ctx.getImageData(10,10,1,1).data;
+    document.documentElement.style.setProperty(
+      "--accent",`rgb(${d[0]},${d[1]},${d[2]})`
+    );
   };
 
   function go(){
-    location.href="player.html"+
-      "?anime="+encodeURIComponent(anime)+
-      "&episode="+encodeURIComponent(episode)+
-      "&id="+driveId+
-      "&q="+qual+
-      "&poster="+encodeURIComponent(poster||"");
+    document.getElementById("loading").classList.add("show");
+    setTimeout(()=>{
+      location.href =
+        "player.html?anime="+encodeURIComponent(anime)+
+        "&episode="+encodeURIComponent(episode)+
+        "&id="+driveId+
+        "&q="+qual+
+        "&poster="+encodeURIComponent(poster||"");
+    },2200);
   }
 </script>
 
