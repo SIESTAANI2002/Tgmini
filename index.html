@@ -7,8 +7,8 @@
 
   <style>
     :root{
-      --accent:#ef4444;
-      --accent-dark:#7f1d1d;
+      --accent:#3b82f6;
+      --accent-dark:#1e293b;
     }
 
     body{
@@ -19,7 +19,7 @@
       margin:0;
     }
 
-    /* ===== Animated Border ===== */
+    /* ===== Animated Border (Poster Color) ===== */
     .border-wrap{
       padding:3px;
       border-radius:18px;
@@ -72,7 +72,7 @@
       opacity:.95;
     }
 
-    /* ===== Button ===== */
+    /* ===== Button uses SAME poster color ===== */
     .play-btn{
       margin-top:18px;
       width:100%;
@@ -86,8 +86,12 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:10px; /* 👈 icon & text gap */
-      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+      gap:10px;
+      background:linear-gradient(
+        135deg,
+        var(--accent),
+        var(--accent-dark)
+      );
       box-shadow:0 10px 28px rgba(0,0,0,.6);
     }
   </style>
@@ -144,25 +148,37 @@
   const posterImg = document.getElementById("poster");
   posterImg.src = poster || "https://i.imgur.com/8RKXAIV.jpg";
 
-  /* ===== Auto Color Extract from Poster ===== */
+  /* ===== Extract DOMINANT COLOR from poster ===== */
   function extractColor(img){
     const c=document.createElement("canvas");
     const x=c.getContext("2d");
     c.width=img.naturalWidth;
     c.height=img.naturalHeight;
     x.drawImage(img,0,0);
+
     const d=x.getImageData(0,0,c.width,c.height).data;
     let r=0,g=0,b=0,n=0;
+
     for(let i=0;i<d.length;i+=40){
-      r+=d[i];g+=d[i+1];b+=d[i+2];n++;
+      r+=d[i]; g+=d[i+1]; b+=d[i+2];
+      n++;
     }
-    r=Math.floor(r/n);g=Math.floor(g/n);b=Math.floor(b/n);
-    return `rgb(${r},${g},${b})`;
+
+    r=Math.floor(r/n);
+    g=Math.floor(g/n);
+    b=Math.floor(b/n);
+
+    return { r,g,b };
   }
 
   posterImg.onload=()=>{
-    const col=extractColor(posterImg);
-    document.documentElement.style.setProperty("--accent",col);
+    const {r,g,b} = extractColor(posterImg);
+
+    const accent = `rgb(${r},${g},${b})`;
+    const dark   = `rgb(${Math.floor(r*0.4)},${Math.floor(g*0.4)},${Math.floor(b*0.4)})`;
+
+    document.documentElement.style.setProperty("--accent",accent);
+    document.documentElement.style.setProperty("--accent-dark",dark);
   };
 
   function go(){
