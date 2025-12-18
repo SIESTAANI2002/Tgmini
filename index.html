@@ -9,54 +9,50 @@
     body {
       background:#0f172a;
       color:#e5e7eb;
-      font-family: Arial, sans-serif;
-      padding:18px;
+      font-family:Arial, sans-serif;
+      padding:16px;
+      margin:0;
     }
 
     .card {
       background:#020617;
-      border-radius:16px;
+      border-radius:14px;
       overflow:hidden;
-      box-shadow:0 0 22px rgba(0,0,0,.7);
+      box-shadow:0 10px 30px rgba(0,0,0,.6);
     }
 
     .poster {
       width:100%;
-      height:260px;
+      height:220px;
       object-fit:cover;
-      display:block;
     }
 
     .content {
-      padding:18px;
+      padding:16px;
     }
 
-    .title {
+    h2 {
+      margin:0 0 10px;
       font-size:20px;
-      font-weight:bold;
-      margin-bottom:12px;
     }
 
     .meta {
       font-size:14px;
       line-height:1.6;
-      opacity:.95;
+      color:#cbd5f5;
     }
 
-    .meta span {
-      display:block;
-    }
-
-    button {
+    .btn {
+      margin-top:18px;
       background:#2563eb;
       border:none;
-      padding:12px;
+      padding:14px;
+      width:100%;
       border-radius:10px;
       color:white;
       font-size:16px;
-      margin-top:18px;
+      font-weight:bold;
       cursor:pointer;
-      width:100%;
     }
   </style>
 </head>
@@ -66,57 +62,46 @@
 <div class="card">
 
   <!-- POSTER -->
-  <img id="poster" class="poster" src="" alt="Poster">
+  <img id="poster" class="poster" src="" />
 
   <div class="content">
-
-    <div class="title" id="anime">
-      ㊂ Anime Name
-    </div>
+    <h2 id="anime"></h2>
 
     <div class="meta">
-      <span>⊙ Genres: 🤣 #Comedy, 💞 #Romance</span>
-      <span>⊙ Status: RELEASING</span>
-      <span>⊙ Source: @Anime_Toki</span>
-      <span id="episode">⊙ Episode: --</span>
-      <span>⊙ Audio: Japanese</span>
-      <span>⊙ Subtitle: English</span>
-      <span>⊙ Codec: HEVC</span>
-      <span id="resolution">⊙ Resolution: --</span>
+      ⊙ <b id="episode"></b><br>
+      ⊙ <b id="quality"></b><br>
+      ⊙ Codec: HEVC | AAC<br>
+      ⊙ Subtitle: English
     </div>
 
-    <button onclick="go()">▶ Continue</button>
+    <button class="btn" onclick="go()">▶ Continue</button>
   </div>
-
 </div>
 
 <script>
   const tg = Telegram.WebApp;
-  tg.ready();
   tg.expand();
 
-  const raw = tg.initDataUnsafe?.start_param;
-  if (!raw) {
-    document.body.innerHTML = "❌ Invalid request";
-  }
-
+  // Decode payload
+  const raw = tg.initDataUnsafe.start_param;
   const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime, episode, driveId, qual] = decoded.split("|");
 
-  // SET TEXT
+  // Set text
   document.getElementById("anime").innerText = "㊂ " + anime;
-  document.getElementById("episode").innerText =
-    "⊙ Episode: " + episode.replace("Episode ", "");
-  document.getElementById("resolution").innerText =
-    "⊙ Resolution: " + qual;
+  document.getElementById("episode").innerText = "Episode: " + episode;
+  document.getElementById("quality").innerText = "Resolution: " + qual;
 
-  // SET POSTER (Telegram post thumbnail fallback)
-  // You can later pass poster URL via payload if you want
+  // Google Drive thumbnail (FIXED – no random image)
   document.getElementById("poster").src =
-    "https://i.imgur.com/8RKXAIV.jpg"; // default poster placeholder
+    "https://drive.google.com/thumbnail?id=" + driveId + "&sz=w1000";
 
   function go(){
-    location.href = "player.html";
+    location.href =
+      "player.html?anime=" + encodeURIComponent(anime) +
+      "&episode=" + encodeURIComponent(episode) +
+      "&id=" + driveId +
+      "&q=" + qual;
   }
 </script>
 
