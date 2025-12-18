@@ -1,73 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Anime Player</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-  body {
-    margin: 0;
-    background: #0f0f0f;
-    color: #fff;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  .box {
-    width: 90%;
-    max-width: 420px;
-    background: #181818;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-  }
-  h2 {
-    margin-top: 0;
-  }
-  button {
-    width: 100%;
-    padding: 14px;
-    margin-top: 12px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-  }
-  .stream {
-    background: #1db954;
-    color: #000;
-  }
-  .download {
-    background: #2196f3;
-    color: #fff;
-  }
-</style>
+  <meta charset="utf-8">
+  <title>AnimeToki</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      background:#0f172a;
+      color:#fff;
+      font-family:Arial;
+      text-align:center;
+      padding:20px;
+    }
+    .card {
+      background:#020617;
+      border-radius:12px;
+      padding:20px;
+      box-shadow:0 0 20px rgba(0,0,0,.5);
+    }
+    button {
+      background:#2563eb;
+      border:none;
+      padding:12px 20px;
+      border-radius:8px;
+      color:white;
+      font-size:16px;
+      margin-top:20px;
+      cursor:pointer;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="box">
-  <h2>🎬 Anime Ready</h2>
-  <p>Select how you want to watch</p>
+<div class="card">
+  <h2 id="anime">Anime Name</h2>
+  <p id="episode">Episode</p>
+  <p id="quality">Quality</p>
 
-  <button class="stream" onclick="openStream()">▶️ Stream Online</button>
-  <button class="download" onclick="downloadFile()">⬇️ Download</button>
+  <button onclick="go()">▶ Continue</button>
 </div>
 
 <script>
-  const params = new URLSearchParams(window.location.search);
-  const driveId = params.get("id");
+const tg = Telegram.WebApp;
+tg.expand();
 
-  function openStream() {
-    window.location.href = `player.html?id=${driveId}`;
-  }
+const raw = tg.initDataUnsafe.start_param;
+const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+const [anime, episode, driveId, qual] = decoded.split("|");
 
-  function downloadFile() {
-    window.location.href = `https://drive.google.com/uc?export=download&id=${driveId}`;
-  }
+document.getElementById("anime").innerText = anime;
+document.getElementById("episode").innerText = episode;
+document.getElementById("quality").innerText = "Quality: " + qual;
+
+function go(){
+  location.href =
+    "player.html?anime=" + encodeURIComponent(anime) +
+    "&episode=" + encodeURIComponent(episode) +
+    "&id=" + driveId +
+    "&q=" + qual;
+}
 </script>
 
 </body>
