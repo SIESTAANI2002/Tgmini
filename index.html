@@ -1,71 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>AnimeToki Mini App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="UTF-8">
+<title>Anime Player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      background: #0d0d0d;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .box {
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
-    }
-    h1 {
-      font-size: 26px;
-      margin-bottom: 10px;
-    }
-    .payload {
-      font-size: 12px;
-      opacity: 0.6;
-      word-break: break-all;
-      margin-bottom: 20px;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      font-size: 18px;
-      border-radius: 8px;
-      border: none;
-      background: #2196f3;
-      color: white;
-    }
-  </style>
+<style>
+  body {
+    margin: 0;
+    background: #0f0f0f;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .box {
+    width: 90%;
+    max-width: 420px;
+    background: #181818;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  h2 {
+    margin-top: 0;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+  }
+  .stream {
+    background: #1db954;
+    color: #000;
+  }
+  .download {
+    background: #2196f3;
+    color: #fff;
+  }
+</style>
 </head>
 
 <body>
-  <div class="box">
-    <h1>AnimeToki Mini App</h1>
-    <div class="payload" id="payload">No payload</div>
-    <button id="continue">Continue</button>
-  </div>
+
+<div class="box">
+  <h2>🎬 Anime Ready</h2>
+  <p>Select how you want to watch</p>
+
+  <button class="stream" onclick="openStream()">▶️ Stream Online</button>
+  <button class="download" onclick="downloadFile()">⬇️ Download</button>
+</div>
 
 <script>
-  const tg = window.Telegram.WebApp;
-  tg.expand();
+  const params = new URLSearchParams(window.location.search);
+  const driveId = params.get("id");
 
-  const payload = tg.initDataUnsafe?.start_param || "";
-  document.getElementById("payload").innerText =
-    payload ? "Payload:\n" + payload : "No payload found";
+  function openStream() {
+    window.location.href = `player.html?id=${driveId}`;
+  }
 
-  document.getElementById("continue").onclick = () => {
-    if (!payload) {
-      alert("No payload found");
-      return;
-    }
-    window.location.href = `player.html?p=${payload}`;
-  };
+  function downloadFile() {
+    window.location.href = `https://drive.google.com/uc?export=download&id=${driveId}`;
+  }
 </script>
 
 </body>
