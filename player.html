@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Anime Player</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -47,7 +48,10 @@
   <!-- STREAM -->
   <iframe id="player"></iframe>
 
-  <!-- DOWNLOAD -->
+  <div class="btn stream" onclick="openStream()">
+    ▶️ Stream Fullscreen
+  </div>
+
   <div class="btn download" onclick="downloadFile()">
     ⬇️ Download
   </div>
@@ -57,26 +61,28 @@
 <script>
   const tg = Telegram.WebApp;
   tg.ready();
+  tg.expand();
 
-  // payload format: title|episode|drive_id|quality
-  const data = tg.initDataUnsafe?.start_param;
-  if (!data) {
-    document.body.innerHTML = "Invalid request";
+  const raw = tg.initDataUnsafe?.start_param;
+  if (!raw) {
+    document.body.innerHTML = "❌ Invalid request";
   }
 
-  const decoded = atob(data.replace(/-/g, '+').replace(/_/g, '/'));
+  const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
   const [title, episode, driveId, quality] = decoded.split("|");
 
   document.getElementById("title").innerText =
-    `${title} (${episode}) • ${quality}`;
+    `${title} • ${episode} • ${quality}`;
 
-  // STREAM URL (embed)
-  const streamUrl =
-    `https://drive.google.com/file/d/${driveId}/preview`;
+  const previewUrl =
+    `https://drive.google.com/file/d/${driveId}/preview?rm=minimal`;
 
-  document.getElementById("player").src = streamUrl;
+  document.getElementById("player").src = previewUrl;
 
-  // DOWNLOAD (external browser)
+  function openStream(){
+    location.href = "stream.html";
+  }
+
   function downloadFile() {
     const downloadUrl =
       `https://drive.google.com/uc?export=download&id=${driveId}`;
@@ -86,5 +92,6 @@
     });
   }
 </script>
+
 </body>
 </html>
