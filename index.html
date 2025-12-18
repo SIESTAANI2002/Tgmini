@@ -14,12 +14,31 @@
       margin:0;
     }
 
+    /* 🔥 ANIMATED BORDER WRAPPER */
+    .border-wrap {
+      padding:3px;
+      border-radius:18px;
+      background: linear-gradient(
+        270deg,
+        #ff0000,
+        #000000,
+        #ff0000
+      );
+      background-size: 400% 400%;
+      animation: borderGlow 6s ease infinite;
+    }
+
+    @keyframes borderGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     .card {
       background:#020617;
-      border-radius:16px;
+      border-radius:15px;
       overflow:hidden;
-      padding:0px;
-      box-shadow:0 0 22px rgba(0,0,0,.7);
+      box-shadow:0 0 25px rgba(255,0,0,.35);
     }
 
     .poster {
@@ -27,7 +46,6 @@
       height:190px;
       object-fit: cover;
       object-position: center top;
-      border-radius: 16px 16px 0 0;
       display:block;
     }
 
@@ -44,16 +62,13 @@
     .meta {
       font-size:14px;
       line-height:1.7;
-      opacity:.95;
     }
 
     .meta span {
-      font-size: 14px;
       display:block;
       font-weight:600;
     }
 
-    /* 🔥 FINAL BUTTON STYLE */
     .play-btn {
       margin-top:20px;
       width:100%;
@@ -71,8 +86,8 @@
       font-weight:800;
       color:#fff;
 
-      background: linear-gradient(135deg, #2563eb, #1e40af);
-      box-shadow: 0 8px 22px rgba(37,99,235,.45);
+      background: linear-gradient(135deg, #dc2626, #7f1d1d);
+      box-shadow: 0 8px 22px rgba(220,38,38,.55);
       transition: all .2s ease;
     }
 
@@ -83,37 +98,37 @@
     .play-icon {
       font-size:18px;
     }
-  </style>
+  </style
 </head>
 
 <body>
 
-<div class="card">
+<!-- 🔥 BORDER -->
+<div class="border-wrap">
 
-  <!-- POSTER -->
-  <img id="poster" class="poster" src="" alt="Poster">
+  <div class="card">
 
-  <div class="content">
+    <img id="poster" class="poster" src="" alt="Poster">
 
-    <div class="title" id="anime">
-      <b>㊂ Anime Name</b>
+    <div class="content">
+
+      <div class="title" id="anime">㊂ Anime Name</div>
+
+      <div class="meta">
+        <span id="episode">⊙ Episode: --</span>
+        <span>⊙ Audio: Japanese</span>
+        <span>⊙ Subtitle: English</span>
+        <span>⊙ Codec: HEVC</span>
+        <span id="resolution">⊙ Resolution: --</span>
+        <span>⊙ Source: AnimeToki.com</span>
+      </div>
+
+      <button class="play-btn" onclick="go()">
+        <span class="play-icon">▶</span>
+        <span>Watch</span>
+      </button>
+
     </div>
-
-    <div class="meta">
-      <span id="episode"><b>⊙ Episode:</b> --</span>
-      <span><b>⊙ Audio:</b> Japanese</span>
-      <span><b>⊙ Subtitle:</b> English</span>
-      <span><b>⊙ Codec:</b> HEVC</span>
-      <span id="resolution"><b>⊙ Resolution:</b> --</span>
-      <span><b>⊙ Source:</b> AnimeToki.com</span>
-    </div>
-
-    <!-- 🔥 PLAY BUTTON -->
-    <button class="play-btn" onclick="go()">
-      <span class="play-icon">▶</span>
-      <span>Watch</span>
-    </button>
-
   </div>
 
 </div>
@@ -133,10 +148,8 @@
   const [anime, episode, driveId, qual, poster] = decoded.split("|");
 
   document.getElementById("anime").innerText = "㊂ " + anime;
-
   document.getElementById("episode").innerText =
     "⊙ Episode: " + episode.replace("Episode ", "");
-
   document.getElementById("resolution").innerText =
     "⊙ Resolution: " + qual;
 
