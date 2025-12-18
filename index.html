@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>AnimeToki</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     body {
       background:#0f172a;
@@ -27,9 +28,11 @@
       font-size:16px;
       margin-top:20px;
       cursor:pointer;
+      width:100%;
     }
   </style>
 </head>
+
 <body>
 
 <div class="card">
@@ -41,24 +44,25 @@
 </div>
 
 <script>
-const tg = Telegram.WebApp;
-tg.expand();
+  const tg = Telegram.WebApp;
+  tg.ready();
+  tg.expand();
 
-const raw = tg.initDataUnsafe.start_param;
-const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
-const [anime, episode, driveId, qual] = decoded.split("|");
+  const raw = tg.initDataUnsafe?.start_param;
+  if (!raw) {
+    document.body.innerHTML = "❌ Invalid request";
+  }
 
-document.getElementById("anime").innerText = anime;
-document.getElementById("episode").innerText = episode;
-document.getElementById("quality").innerText = "Quality: " + qual;
+  const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+  const [anime, episode, driveId, qual] = decoded.split("|");
 
-function go(){
-  location.href =
-    "player.html?anime=" + encodeURIComponent(anime) +
-    "&episode=" + encodeURIComponent(episode) +
-    "&id=" + driveId +
-    "&q=" + qual;
-}
+  document.getElementById("anime").innerText = anime;
+  document.getElementById("episode").innerText = episode;
+  document.getElementById("quality").innerText = "Quality: " + qual;
+
+  function go(){
+    location.href = "player.html";
+  }
 </script>
 
 </body>
