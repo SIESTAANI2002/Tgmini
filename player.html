@@ -2,63 +2,62 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>AnimeToki</title>
+  <title>Watch Options</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      background:#0f172a;
-      color:#fff;
+      background:#020617;
+      color:white;
       font-family:Arial;
       text-align:center;
       padding:20px;
     }
-    .card {
-      background:#020617;
-      border-radius:12px;
+    .box {
+      background:#0f172a;
       padding:20px;
-      box-shadow:0 0 20px rgba(0,0,0,.5);
+      border-radius:12px;
     }
-    button {
-      background:#2563eb;
-      border:none;
-      padding:12px 20px;
+    a {
+      display:block;
+      margin:15px 0;
+      padding:12px;
       border-radius:8px;
-      color:white;
+      text-decoration:none;
       font-size:16px;
-      margin-top:20px;
-      cursor:pointer;
+      color:white;
     }
+    .stream { background:#16a34a; }
+    .download { background:#2563eb; }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h2 id="anime">Anime Name</h2>
-  <p id="episode">Episode</p>
-  <p id="quality">Quality</p>
+<div class="box">
+  <h3 id="anime"></h3>
+  <p id="episode"></p>
 
-  <button onclick="go()">▶ Continue</button>
+  <a id="stream" class="stream">▶ Stream</a>
+  <a id="download" class="download">⬇ Download</a>
 </div>
 
 <script>
 const tg = Telegram.WebApp;
 tg.expand();
 
-const raw = tg.initDataUnsafe.start_param;
-const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
-const [anime, episode, driveId, qual] = decoded.split("|");
+const p = new URLSearchParams(location.search);
+
+const anime = p.get("anime");
+const episode = p.get("episode");
+const id = p.get("id");
 
 document.getElementById("anime").innerText = anime;
 document.getElementById("episode").innerText = episode;
-document.getElementById("quality").innerText = "Quality: " + qual;
 
-function go(){
-  location.href =
-    "player.html?anime=" + encodeURIComponent(anime) +
-    "&episode=" + encodeURIComponent(episode) +
-    "&id=" + driveId +
-    "&q=" + qual;
-}
+document.getElementById("stream").href =
+  "stream.html?id=" + id;
+
+document.getElementById("download").href =
+  "https://drive.google.com/uc?id=" + id + "&export=download";
 </script>
 
 </body>
