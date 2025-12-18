@@ -1,64 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Watch Options</title>
+  <meta charset="UTF-8" />
+  <title>Anime Player</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      background:#020617;
-      color:white;
-      font-family:Arial;
-      text-align:center;
-      padding:20px;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: #fff;
     }
-    .box {
-      background:#0f172a;
-      padding:20px;
-      border-radius:12px;
+    .container {
+      padding: 12px;
     }
-    a {
-      display:block;
-      margin:15px 0;
-      padding:12px;
-      border-radius:8px;
-      text-decoration:none;
-      font-size:16px;
-      color:white;
+    iframe {
+      width: 100%;
+      height: 220px;
+      border-radius: 10px;
+      border: none;
     }
-    .stream { background:#16a34a; }
-    .download { background:#2563eb; }
+    .btn {
+      display: block;
+      margin-top: 12px;
+      padding: 12px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .stream {
+      background: #1db954;
+    }
+    .download {
+      background: #1e90ff;
+    }
   </style>
 </head>
+
 <body>
+<div class="container">
 
-<div class="box">
-  <h3 id="anime"></h3>
-  <p id="episode"></p>
+  <h3 id="title"></h3>
 
-  <a id="stream" class="stream">▶ Stream</a>
-  <a id="download" class="download">⬇ Download</a>
+  <!-- STREAM -->
+  <iframe id="player"></iframe>
+
+  <!-- DOWNLOAD -->
+  <div class="btn download" onclick="downloadFile()">
+    ⬇️ Download
+  </div>
+
 </div>
 
 <script>
-const tg = Telegram.WebApp;
-tg.expand();
+  const tg = Telegram.WebApp;
+  tg.ready();
 
-const p = new URLSearchParams(location.search);
+  // payload format: title|episode|drive_id|quality
+  const data = tg.initDataUnsafe?.start_param;
+  if (!data) {
+    document.body.innerHTML = "Invalid request";
+  }
 
-const anime = p.get("anime");
-const episode = p.get("episode");
-const id = p.get("id");
+  const decoded = atob(data.replace(/-/g, '+').replace(/_/g, '/'));
+  const [title, episode, driveId, quality] = decoded.split("|");
 
-document.getElementById("anime").innerText = anime;
-document.getElementById("episode").innerText = episode;
+  document.getElementById("title").innerText =
+    `${title} (${episode}) • ${quality}`;
 
-document.getElementById("stream").href =
-  "stream.html?id=" + id;
+  // STREAM URL (embed)
+  const streamUrl =
+    `https://drive.google.com/file/d/${driveId}/preview`;
 
-document.getElementById("download").href =
-  "https://drive.google.com/uc?id=" + id + "&export=download";
+  document.getElementById("player").src = streamUrl;
+
+  // DOWNLOAD (external browser)
+  function downloadFile() {
+    const downloadUrl =
+      `https://drive.google.com/uc?export=download&id=${driveId}`;
+
+    Telegram.WebApp.openLink(downloadUrl, {
+      try_instant_view: false
+    });
+  }
 </script>
-
 </body>
 </html>
