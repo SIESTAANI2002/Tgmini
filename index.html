@@ -6,106 +6,96 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
-    body {
+    :root{
+      --accent:#ef4444;
+      --accent-dark:#7f1d1d;
+    }
+
+    body{
       background:#0f172a;
       color:#e5e7eb;
-      font-family: Arial, sans-serif;
-      padding:18px;
+      font-family:Arial,sans-serif;
+      padding:16px;
       margin:0;
     }
 
-    /* 🔥 ANIMATED BORDER WRAPPER */
-    .border-wrap {
+    /* ===== Animated Border ===== */
+    .border-wrap{
       padding:3px;
       border-radius:18px;
-      background: linear-gradient(
+      background:linear-gradient(
         270deg,
-        #ff0000,
-        #000000,
-        #ff0000
+        var(--accent),
+        #000,
+        var(--accent-dark)
       );
-      background-size: 400% 400%;
-      animation: borderGlow 6s ease infinite;
+      background-size:400% 400%;
+      animation:borderGlow 6s ease infinite;
     }
 
-    @keyframes borderGlow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    @keyframes borderGlow{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
     }
 
-    .card {
+    .card{
       background:#020617;
       border-radius:15px;
       overflow:hidden;
-      box-shadow:0 0 25px rgba(255,0,0,.35);
+      box-shadow:0 0 22px rgba(0,0,0,.7);
     }
 
-    .poster {
+    .poster{
       width:100%;
-      height:190px;
-      object-fit: cover;
-      object-position: center top;
+      height:180px;
+      object-fit:cover;
+      object-position:center top;
       display:block;
     }
 
-    .content {
-      padding:13px;
+    .content{
+      padding:14px;
     }
 
-    .title {
+    .title{
       font-size:20px;
-      font-weight:700;
-      margin-bottom:13px;
+      font-weight:800;
+      margin-bottom:10px;
     }
 
-    .meta {
-      font-size:14px;
-      line-height:1.7;
-    }
-
-    .meta span {
+    .meta span{
       display:block;
+      font-size:14px;
       font-weight:600;
+      line-height:1.7;
+      opacity:.95;
     }
 
-    .play-btn {
-      margin-top:20px;
+    /* ===== Button ===== */
+    .play-btn{
+      margin-top:18px;
       width:100%;
       padding:12px;
       border:none;
       border-radius:12px;
+      font-size:16px;
+      font-weight:800;
       cursor:pointer;
-
+      color:white;
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:10px;
-
-      font-size:16px;
-      font-weight:800;
-      color:#fff;
-
-      background: linear-gradient(135deg, #dc2626, #7f1d1d);
-      box-shadow: 0 8px 22px rgba(220,38,38,.55);
-      transition: all .2s ease;
+      gap:10px; /* 👈 icon & text gap */
+      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+      box-shadow:0 10px 28px rgba(0,0,0,.6);
     }
-
-    .play-btn:active {
-      transform: scale(0.97);
-    }
-
-    .play-icon {
-      font-size:18px;
-    }
-  </style
+  </style>
 </head>
 
 <body>
 
-<!-- 🔥 BORDER -->
 <div class="border-wrap">
-
   <div class="card">
 
     <img id="poster" class="poster" src="" alt="Poster">
@@ -124,13 +114,11 @@
       </div>
 
       <button class="play-btn" onclick="go()">
-        <span class="play-icon">▶</span>
-        <span>Watch</span>
+        ▶️ <span>Watch</span>
       </button>
 
     </div>
   </div>
-
 </div>
 
 <script>
@@ -139,9 +127,9 @@
   tg.expand();
 
   const raw = tg.initDataUnsafe?.start_param;
-  if (!raw) {
-    document.body.innerHTML = "❌ Invalid request";
-    throw new Error("No start_param");
+  if(!raw){
+    document.body.innerHTML="❌ Invalid request";
+    throw new Error("No payload");
   }
 
   const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
@@ -149,22 +137,41 @@
 
   document.getElementById("anime").innerText = "㊂ " + anime;
   document.getElementById("episode").innerText =
-    "⊙ Episode: " + episode.replace("Episode ", "");
+    "⊙ Episode: " + episode.replace("Episode ","");
   document.getElementById("resolution").innerText =
     "⊙ Resolution: " + qual;
 
-  document.getElementById("poster").src =
-    poster || "https://i.imgur.com/8RKXAIV.jpg";
+  const posterImg = document.getElementById("poster");
+  posterImg.src = poster || "https://i.imgur.com/8RKXAIV.jpg";
+
+  /* ===== Auto Color Extract from Poster ===== */
+  function extractColor(img){
+    const c=document.createElement("canvas");
+    const x=c.getContext("2d");
+    c.width=img.naturalWidth;
+    c.height=img.naturalHeight;
+    x.drawImage(img,0,0);
+    const d=x.getImageData(0,0,c.width,c.height).data;
+    let r=0,g=0,b=0,n=0;
+    for(let i=0;i<d.length;i+=40){
+      r+=d[i];g+=d[i+1];b+=d[i+2];n++;
+    }
+    r=Math.floor(r/n);g=Math.floor(g/n);b=Math.floor(b/n);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  posterImg.onload=()=>{
+    const col=extractColor(posterImg);
+    document.documentElement.style.setProperty("--accent",col);
+  };
 
   function go(){
-    const params =
-      "?anime=" + encodeURIComponent(anime) +
-      "&episode=" + encodeURIComponent(episode) +
-      "&id=" + driveId +
-      "&q=" + qual +
-      "&poster=" + encodeURIComponent(poster || "");
-
-    location.href = "player.html" + params;
+    location.href="player.html"+
+      "?anime="+encodeURIComponent(anime)+
+      "&episode="+encodeURIComponent(episode)+
+      "&id="+driveId+
+      "&q="+qual+
+      "&poster="+encodeURIComponent(poster||"");
   }
 </script>
 
