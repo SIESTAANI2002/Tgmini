@@ -35,7 +35,7 @@ const streamBtn = document.getElementById("streamBtn");
 if (streamBtn && drive_id) {
   streamBtn.onclick = () => {
     window.open(
-      `https://drive.google.com/file/d/${drive_id}/preview`,
+      `https://drive.google.com/file/d/${drive_id}/view`,
       "_blank"
     );
   };
