@@ -8,25 +8,53 @@
   <style>
     body {
       background:#0f172a;
-      color:#fff;
-      font-family:Arial;
-      text-align:center;
-      padding:20px;
+      color:#e5e7eb;
+      font-family: Arial, sans-serif;
+      padding:18px;
     }
+
     .card {
       background:#020617;
-      border-radius:12px;
-      padding:20px;
-      box-shadow:0 0 20px rgba(0,0,0,.5);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 0 22px rgba(0,0,0,.7);
     }
+
+    .poster {
+      width:100%;
+      height:260px;
+      object-fit:cover;
+      display:block;
+    }
+
+    .content {
+      padding:18px;
+    }
+
+    .title {
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:12px;
+    }
+
+    .meta {
+      font-size:14px;
+      line-height:1.6;
+      opacity:.95;
+    }
+
+    .meta span {
+      display:block;
+    }
+
     button {
       background:#2563eb;
       border:none;
-      padding:12px 20px;
-      border-radius:8px;
+      padding:12px;
+      border-radius:10px;
       color:white;
       font-size:16px;
-      margin-top:20px;
+      margin-top:18px;
       cursor:pointer;
       width:100%;
     }
@@ -36,11 +64,30 @@
 <body>
 
 <div class="card">
-  <h2 id="anime">Anime Name</h2>
-  <p id="episode">Episode</p>
-  <p id="quality">Quality</p>
 
-  <button onclick="go()">▶ Continue</button>
+  <!-- POSTER -->
+  <img id="poster" class="poster" src="" alt="Poster">
+
+  <div class="content">
+
+    <div class="title" id="anime">
+      ㊂ Anime Name
+    </div>
+
+    <div class="meta">
+      <span>⊙ Genres: 🤣 #Comedy, 💞 #Romance</span>
+      <span>⊙ Status: RELEASING</span>
+      <span>⊙ Source: @Anime_Toki</span>
+      <span id="episode">⊙ Episode: --</span>
+      <span>⊙ Audio: Japanese</span>
+      <span>⊙ Subtitle: English</span>
+      <span>⊙ Codec: HEVC</span>
+      <span id="resolution">⊙ Resolution: --</span>
+    </div>
+
+    <button onclick="go()">▶ Continue</button>
+  </div>
+
 </div>
 
 <script>
@@ -56,9 +103,17 @@
   const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime, episode, driveId, qual] = decoded.split("|");
 
-  document.getElementById("anime").innerText = anime;
-  document.getElementById("episode").innerText = episode;
-  document.getElementById("quality").innerText = "Quality: " + qual;
+  // SET TEXT
+  document.getElementById("anime").innerText = "㊂ " + anime;
+  document.getElementById("episode").innerText =
+    "⊙ Episode: " + episode.replace("Episode ", "");
+  document.getElementById("resolution").innerText =
+    "⊙ Resolution: " + qual;
+
+  // SET POSTER (Telegram post thumbnail fallback)
+  // You can later pass poster URL via payload if you want
+  document.getElementById("poster").src =
+    "https://i.imgur.com/8RKXAIV.jpg"; // default poster placeholder
 
   function go(){
     location.href = "player.html";
