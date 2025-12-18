@@ -19,7 +19,7 @@
       margin:0;
     }
 
-    /* ===== Animated Gradient Border ===== */
+    /* ===== Animated Border ===== */
     .border-wrap{
       padding:3px;
       border-radius:18px;
@@ -48,7 +48,7 @@
 
     .poster{
       width:100%;
-      height:190px;
+      height:180px;
       object-fit:cover;
       object-position:center top;
       display:block;
@@ -72,6 +72,7 @@
       opacity:.95;
     }
 
+    /* ===== Button ===== */
     .play-btn{
       margin-top:18px;
       width:100%;
@@ -101,14 +102,7 @@
 <div class="border-wrap">
   <div class="card">
 
-    <img
-      id="poster"
-      class="poster"
-      src=""
-      alt="Poster"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    >
+    <img id="poster" class="poster" src="" alt="Poster">
 
     <div class="content">
 
@@ -136,6 +130,21 @@
   tg.ready();
   tg.expand();
 
+  /* ===== RANDOM COLOR EVERY OPEN ===== */
+  function randomColor(){
+    const r = Math.floor(Math.random()*200)+40;
+    const g = Math.floor(Math.random()*200)+40;
+    const b = Math.floor(Math.random()*200)+40;
+    return `rgb(${r},${g},${b})`;
+  }
+
+  const accent = randomColor();
+  const dark   = randomColor();
+
+  document.documentElement.style.setProperty("--accent", accent);
+  document.documentElement.style.setProperty("--accent-dark", dark);
+
+  /* ===== PAYLOAD ===== */
   const raw = tg.initDataUnsafe?.start_param;
   if(!raw){
     document.body.innerHTML="❌ Invalid request";
@@ -151,46 +160,8 @@
   document.getElementById("resolution").innerText =
     "⊙ Resolution: " + qual;
 
-  const posterImg = document.getElementById("poster");
-  posterImg.src = poster || "https://i.imgur.com/8RKXAIV.jpg";
-
-  /* ===== Poster Color → Gradient ===== */
-  function extractColor(img){
-    const c=document.createElement("canvas");
-    const x=c.getContext("2d");
-    c.width=img.naturalWidth;
-    c.height=img.naturalHeight;
-
-    try{
-      x.drawImage(img,0,0);
-      const d=x.getImageData(0,0,c.width,c.height).data;
-
-      let r=0,g=0,b=0,n=0;
-      for(let i=0;i<d.length;i+=60){
-        r+=d[i]; g+=d[i+1]; b+=d[i+2];
-        n++;
-      }
-
-      r=Math.floor(r/n);
-      g=Math.floor(g/n);
-      b=Math.floor(b/n);
-
-      document.documentElement.style.setProperty(
-        "--accent",`rgb(${r},${g},${b})`
-      );
-      document.documentElement.style.setProperty(
-        "--accent-dark",
-        `rgb(${Math.floor(r*0.4)},${Math.floor(g*0.4)},${Math.floor(b*0.4)})`
-      );
-    }catch(e){
-      document.documentElement.style.setProperty("--accent","#3b82f6");
-      document.documentElement.style.setProperty("--accent-dark","#020617");
-    }
-  }
-
-  posterImg.onload = () => {
-    setTimeout(()=>extractColor(posterImg),100);
-  };
+  document.getElementById("poster").src =
+    poster || "https://i.imgur.com/8RKXAIV.jpg";
 
   function go(){
     location.href="player.html"+
