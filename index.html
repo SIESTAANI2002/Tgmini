@@ -25,7 +25,7 @@
     .poster {
       width:100%;
       height:190px;
-      object-fit: cover;      /* 🔥 zoom effect */
+      object-fit: cover;
       object-position: center top;
       border-radius: 16px 16px 0 0;
       display:block;
@@ -53,17 +53,35 @@
       font-weight:600;
     }
 
-    button {
-      background:#2563eb;
-      border:none;
-      padding:10px;
-      font-weight:800;
-      border-radius:10px;
-      color:white;
-      font-size:16px;
+    /* 🔥 FINAL BUTTON STYLE */
+    .play-btn {
       margin-top:20px;
-      cursor:pointer;
       width:100%;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+
+      font-size:16px;
+      font-weight:800;
+      color:#fff;
+
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      box-shadow: 0 8px 22px rgba(37,99,235,.45);
+      transition: all .2s ease;
+    }
+
+    .play-btn:active {
+      transform: scale(0.97);
+    }
+
+    .play-icon {
+      font-size:18px;
     }
   </style>
 </head>
@@ -90,7 +108,12 @@
       <span><b>⊙ Source:</b> AnimeToki.com</span>
     </div>
 
-    <button onclick="go()"> ▶  Watch </button>
+    <!-- 🔥 PLAY BUTTON -->
+    <button class="play-btn" onclick="go()">
+      <span class="play-icon">▶</span>
+      <span>Watch</span>
+    </button>
+
   </div>
 
 </div>
@@ -106,11 +129,9 @@
     throw new Error("No start_param");
   }
 
-  // Decode payload
   const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime, episode, driveId, qual, poster] = decoded.split("|");
 
-  // Set content
   document.getElementById("anime").innerText = "㊂ " + anime;
 
   document.getElementById("episode").innerText =
@@ -119,11 +140,9 @@
   document.getElementById("resolution").innerText =
     "⊙ Resolution: " + qual;
 
-  // Poster (real anime poster from bot)
   document.getElementById("poster").src =
     poster || "https://i.imgur.com/8RKXAIV.jpg";
 
-  // Continue → player.html with params
   function go(){
     const params =
       "?anime=" + encodeURIComponent(anime) +
