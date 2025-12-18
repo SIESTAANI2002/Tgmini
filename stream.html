@@ -2,33 +2,44 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Streaming</title>
+  <title>Anime Stream</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     body {
-      margin:0;
-      background:black;
+      margin: 0;
+      background: black;
     }
     iframe {
-      width:100%;
-      height:100vh;
-      border:none;
+      width: 100%;
+      height: 100vh;
+      border: none;
     }
   </style>
 </head>
+
 <body>
 
 <iframe id="player" allowfullscreen></iframe>
 
 <script>
-const tg = Telegram.WebApp;
-tg.expand();
+  const tg = Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+  tg.enableClosingConfirmation();
 
-const p = new URLSearchParams(location.search);
-const id = p.get("id");
+  const raw = tg.initDataUnsafe?.start_param;
+  if (!raw) {
+    document.body.innerHTML = "❌ Invalid stream request";
+  }
 
-document.getElementById("player").src =
-  "https://drive.google.com/file/d/" + id + "/preview";
+  const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+  const parts = decoded.split("|");
+
+  const driveId = parts[2];
+
+  document.getElementById("player").src =
+    `https://drive.google.com/file/d/${driveId}/preview?rm=minimal`;
 </script>
 
 </body>
