@@ -1,41 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>AnimeToki Streaming</title>
-<style>
-html,body{
-  margin:0;
-  height:100%;
-  background:#000;
-}
-iframe{
-  width:100%;
-  height:100%;
-  border:none;
-}
-</style>
+  <meta charset="utf-8">
+  <title>AnimeToki Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+    }
+    iframe {
+      width: 100%;
+      height: 100vh;
+      border: none;
+    }
+  </style>
 </head>
 <body>
 
-<iframe id="player"></iframe>
+<iframe id="player" allowfullscreen></iframe>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const encoded = params.get("data");
+  const tg = window.Telegram.WebApp;
+  tg.ready();
 
-if(!encoded){
-  document.body.innerHTML = "<h2 style='color:white'>No data</h2>";
-}else{
-  const decoded = atob(encoded);
-  const parts = decoded.split("|");
+  // payload example: anime-12345-1mRAou1YxGphf-M3xKhclViNDNx08V2cG-1080
+  const payload = tg.initDataUnsafe?.start_param;
 
-  // parts = ani_id | msg_id | quality
-  const fileId = parts[1]; // <-- Drive file ID stored via DB / logic
+  if (!payload) {
+    document.body.innerHTML = "<h3 style='color:white'>No payload</h3>";
+  } else {
+    const parts = payload.split("-");
+    const driveId = parts[2]; // ✅ THIS IS THE KEY FIX
 
-  document.getElementById("player").src =
-    "https://drive.google.com/file/d/" + fileId + "/preview";
-}
+    if (!driveId || driveId === "None") {
+      document.body.innerHTML = "<h3 style='color:white'>Invalid Drive ID</h3>";
+    } else {
+      const url = `https://drive.google.com/file/d/${driveId}/preview`;
+      document.getElementById("player").src = url;
+    }
+  }
 </script>
 
 </body>
