@@ -1,26 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>AnimeToki Streaming</title>
+  <meta charset="UTF-8">
+  <title>AnimeToki Player</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    body {
+      background: #0d0d0d;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    .stream { background: #4caf50; }
+    .download { background: #ff9800; }
+  </style>
 </head>
+
 <body>
-
-<div class="card">
-  <h1>AnimeToki Streaming</h1>
-
-  <button class="stream" id="streamBtn">▶ Stream Online</button>
-  <button class="download" id="downloadBtn">⬇ Download File</button>
-  <button class="tg" id="tgBtn">📦 Telegram Download</button>
-
-  <div class="ad-box">
-    Advertisement
+  <div class="box">
+    <h2>Choose Option</h2>
+    <button class="stream" id="stream">▶ Stream</button>
+    <button class="download" id="download">⬇ Download</button>
   </div>
-</div>
 
-<script src="app.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const payload = params.get("p");
+
+  if (!payload) {
+    document.body.innerHTML = "Invalid payload";
+    throw new Error("No payload");
+  }
+
+  const decoded = atob(payload.replace(/-/g,'+').replace(/_/g,'/'));
+  const [ani_id, drive_id, qual] = decoded.split("|");
+
+  document.getElementById("stream").onclick = () => {
+    window.location.href = `stream.html?id=${drive_id}`;
+  };
+
+  document.getElementById("download").onclick = () => {
+    window.open(
+      `https://drive.google.com/uc?export=download&id=${drive_id}`,
+      "_blank"
+    );
+  };
+</script>
+
 </body>
 </html>
