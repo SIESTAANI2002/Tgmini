@@ -1,30 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>AnimeToki Mini App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    body {
+      background: #0d0d0d;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+    .payload {
+      font-size: 12px;
+      opacity: 0.6;
+      word-break: break-all;
+      margin-bottom: 20px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: none;
+      background: #2196f3;
+      color: white;
+    }
+  </style>
 </head>
+
 <body>
-
-<div class="card">
-  <h1>AnimeToki Mini App</h1>
-
-  <p class="info">
-    🎬 Episode Ready <br>
-    <span id="quality">Loading...</span>
-  </p>
-
-  <button class="primary" id="continueBtn">▶ Continue</button>
-
-  <div class="ad-box">
-    <!-- Ad / Monetization slot -->
-    Advertisement
+  <div class="box">
+    <h1>AnimeToki Mini App</h1>
+    <div class="payload" id="payload">No payload</div>
+    <button id="continue">Continue</button>
   </div>
-</div>
 
-<script src="app.js"></script>
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+
+  const payload = tg.initDataUnsafe?.start_param || "";
+  document.getElementById("payload").innerText =
+    payload ? "Payload:\n" + payload : "No payload found";
+
+  document.getElementById("continue").onclick = () => {
+    if (!payload) {
+      alert("No payload found");
+      return;
+    }
+    window.location.href = `player.html?p=${payload}`;
+  };
+</script>
+
 </body>
 </html>
