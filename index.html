@@ -10,7 +10,7 @@
       --accent:#3b82f6;
       --accent-dark:#020617;
 
-      --bg:#0f172a;
+      --bg:#000000;           /* ✅ PURE BLACK */
       --card:#020617;
       --text:#e5e7eb;
     }
@@ -36,7 +36,13 @@
       align-items:center;
       justify-content:center;
       position:relative;
-      margin-bottom:12px;
+      padding-bottom:10px;
+      margin-bottom:14px;
+      border-bottom:1px solid rgba(255,255,255,.12); /* ✅ HEADER BORDER */
+    }
+
+    body.light .header{
+      border-bottom:1px solid rgba(0,0,0,.12);
     }
 
     .menu-btn{
@@ -271,12 +277,10 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
-  // random color
   function r(){return Math.floor(Math.random()*200)+40}
   document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
   document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
 
-  // theme
   if(tg.colorScheme==="light") document.body.classList.add("light");
 
   function toggleTheme(){
@@ -292,7 +296,6 @@
   }
   setLogo();
 
-  // menu
   function openMenu(){
     sidebar.classList.add("show");
     overlay.classList.add("show");
@@ -302,13 +305,11 @@
     overlay.classList.remove("show");
   }
 
-  // search
   function search(){
     const q=document.getElementById("searchBox").value.trim();
     if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
   }
 
-  // payload
   const decoded=atob(tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime,episode,driveId,qual,poster]=decoded.split("|");
 
