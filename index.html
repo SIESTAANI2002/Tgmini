@@ -8,47 +8,67 @@
   <style>
     :root{
       --accent:#3b82f6;
-      --bg:#0f172a;
-      --card:#020617;
-      --text:#e5e7eb;
-      --border:#1e293b;
+      --accent-dark:#020617;
     }
 
     body{
-      background:var(--bg);
-      color:var(--text);
+      background:#0f172a;
+      color:#e5e7eb;
       font-family:Arial,sans-serif;
       padding:14px;
       margin:0;
-      overflow-x:hidden;
     }
 
-    /* ================= HEADER ================= */
-    .topbar{
-      display:grid;
-      grid-template-columns:40px 1fr 40px;
+    body[data-theme="light"]{
+      background:#f8fafc;
+      color:#020617;
+    }
+
+    /* ===== HEADER ===== */
+    .header{
+      display:flex;
       align-items:center;
-      padding:10px 4px 14px;
+      justify-content:space-between;
+      padding:10px 12px;
+      border-bottom:1px solid #1e293b;
       margin-bottom:14px;
-      border-bottom:1px solid var(--border);
+    }
+
+    body[data-theme="light"] .header{
+      border-color:#e5e7eb;
     }
 
     .menu-btn{
       font-size:22px;
-      font-weight:900;
       cursor:pointer;
-      user-select:none;
     }
 
     .logo{
-      text-align:center;
+      height:34px;
     }
 
-    .logo img{
-      height:32px;
+    /* ===== SEARCH ===== */
+    .search-wrap{
+      margin:12px 0 16px;
     }
 
-    /* ================= SIDEBAR ================= */
+    .search-wrap input{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid #1e293b;
+      background:#020617;
+      color:#e5e7eb;
+      font-size:15px;
+      outline:none;
+    }
+
+    body[data-theme="light"] .search-wrap input{
+      background:#f1f5f9;
+      color:#020617;
+    }
+
+    /* ===== SIDEBAR ===== */
     .sidebar{
       position:fixed;
       top:0;
@@ -56,68 +76,57 @@
       width:260px;
       height:100%;
       background:#020617;
-      box-shadow:4px 0 25px rgba(0,0,0,.7);
-      padding:20px;
-      transition:.35s ease;
-      z-index:9999;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
+      padding:18px;
+      transition:.3s ease;
+      z-index:1000;
     }
 
-    .sidebar.open{
+    body[data-theme="light"] .sidebar{
+      background:#ffffff;
+    }
+
+    .sidebar.show{
       left:0;
     }
 
-    .side-title{
-      font-size:18px;
-      font-weight:900;
-      margin-bottom:20px;
-      color:var(--accent);
-    }
-
-    .side-btn{
+    .sidebar a{
+      display:block;
       padding:12px;
-      margin-bottom:12px;
-      border-radius:10px;
-      background:#020617;
-      border:1px solid var(--border);
-      font-weight:800;
-      cursor:pointer;
-      text-align:left;
-    }
-
-    .side-btn:hover{
-      background:var(--accent);
-      color:#fff;
-    }
-
-    .socials{
-      border-top:1px solid var(--border);
-      padding-top:16px;
-    }
-
-    .social-btn{
-      width:100%;
-      padding:10px;
       border-radius:10px;
       margin-bottom:10px;
-      background:#020617;
-      border:1px solid var(--border);
-      font-weight:800;
-      cursor:pointer;
-    }
-
-    .social-btn:hover{
-      background:var(--accent);
+      background:#1e293b;
       color:white;
+      text-decoration:none;
+      font-weight:700;
+      text-align:center;
     }
 
-    /* ================= CARD ================= */
+    body[data-theme="light"] .sidebar a{
+      background:#e5e7eb;
+      color:#020617;
+    }
+
+    .sidebar .social{
+      margin-top:20px;
+      display:flex;
+      gap:10px;
+    }
+
+    .sidebar .social a{
+      flex:1;
+      font-size:14px;
+    }
+
+    /* ===== CARD ===== */
     .border-wrap{
       padding:3px;
       border-radius:18px;
-      background:linear-gradient(270deg,var(--accent),#000,var(--accent));
+      background:linear-gradient(
+        270deg,
+        var(--accent),
+        #000,
+        var(--accent-dark)
+      );
       background-size:400% 400%;
       animation:borderGlow 6s ease infinite;
     }
@@ -129,22 +138,30 @@
     }
 
     .card{
-      background:var(--card);
+      background:#020617;
       border-radius:15px;
       overflow:hidden;
+      box-shadow:0 0 22px rgba(0,0,0,.7);
+    }
+
+    body[data-theme="light"] .card{
+      background:#ffffff;
     }
 
     .poster{
       width:100%;
       height:180px;
       object-fit:cover;
+      object-position:center top;
     }
 
-    .content{padding:14px}
+    .content{
+      padding:14px;
+    }
 
     .title{
       font-size:20px;
-      font-weight:900;
+      font-weight:800;
       margin-bottom:10px;
     }
 
@@ -162,86 +179,165 @@
       border:none;
       border-radius:12px;
       font-size:16px;
-      font-weight:900;
+      font-weight:800;
       cursor:pointer;
       color:white;
       display:flex;
+      align-items:center;
       justify-content:center;
       gap:10px;
-      background:linear-gradient(135deg,var(--accent),#020617);
+      background:linear-gradient(
+        135deg,
+        var(--accent),
+        var(--accent-dark)
+      );
     }
+
+    /* ===== LOADER ===== */
+    .loader{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.85);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+      opacity:0;
+      pointer-events:none;
+      transition:.3s;
+    }
+
+    .loader.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .spinner{
+      width:52px;
+      height:52px;
+      border:5px solid #1e293b;
+      border-top-color:var(--accent);
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin-bottom:14px;
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 
 <body>
 
-<!-- ================= SIDEBAR ================= -->
+<!-- ===== SIDEBAR ===== -->
 <div id="sidebar" class="sidebar">
+  <a onclick="openLink('https://animetoki.com')">All Anime</a>
+  <a onclick="openLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
+  <a onclick="openLink('https://t.me/anime_toki')">Ongoing Anime</a>
 
-  <div>
-    <div class="side-title">AnimeToki Menu</div>
-
-    <div class="side-btn" onclick="openLink('https://animetoki.com/')">
-      📺 All Anime
-    </div>
-
-    <div class="side-btn" onclick="openTG('https://t.me/AnimeChannelSakura')">
-      📢 Main Channel
-    </div>
-
-    <div class="side-btn" onclick="openTG('https://t.me/anime_toki')">
-      🔥 Ongoing Anime
-    </div>
+  <div class="social">
+    <a onclick="openLink('https://www.facebook.com/profile.php?id=61580271211687')">Facebook</a>
+    <a onclick="openLink('https://t.me/Ani_Animesh')">Telegram</a>
   </div>
-
-  <div class="socials">
-    <div class="social-btn" onclick="openLink('https://www.facebook.com/profile.php?id=61580271211687')">
-      🌐 Facebook
-    </div>
-    <div class="social-btn" onclick="openTG('https://t.me/Ani_Animesh')">
-      ✈️ Telegram
-    </div>
-  </div>
-
 </div>
 
-<!-- ================= HEADER ================= -->
-<div class="topbar">
+<!-- ===== LOADER ===== -->
+<div id="loader" class="loader">
+  <div class="spinner"></div>
+  <p>Preparing stream...</p>
+</div>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
-  <div class="logo">
-    <img src="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp">
-  </div>
-  <div></div>
+  <img id="logo" class="logo">
+  <div style="width:24px"></div>
 </div>
 
-<!-- ================= CARD ================= -->
+<!-- ===== SEARCH ===== -->
+<div class="search-wrap">
+  <input
+    id="search"
+    type="search"
+    placeholder="Search anime on AnimeToki..."
+    onkeydown="if(event.key==='Enter') doSearch()"
+  >
+</div>
+
+<!-- ===== CARD ===== -->
 <div class="border-wrap">
   <div class="card">
-    <img class="poster" src="https://i.imgur.com/8RKXAIV.jpg">
+
+    <img id="poster" class="poster">
+
     <div class="content">
-      <div class="title">㊂ Anime Ready</div>
+      <div class="title" id="anime">㊂ Anime Name</div>
+
       <div class="meta">
+        <span id="episode">⊙ Episode: --</span>
+        <span>⊙ Audio: Japanese</span>
+        <span>⊙ Subtitle: English</span>
+        <span>⊙ Codec: HEVC</span>
+        <span id="resolution">⊙ Resolution: --</span>
         <span>⊙ Source: AnimeToki.com</span>
       </div>
-      <button class="play-btn">▶️ Watch</button>
+
+      <button class="play-btn" onclick="go()">▶️ Watch</button>
     </div>
+
   </div>
 </div>
 
 <script>
   const tg = Telegram.WebApp;
-  tg.ready(); tg.expand();
+  tg.ready();
+  tg.expand();
+
+  /* ===== THEME ===== */
+  function applyTheme(){
+    document.body.dataset.theme = tg.colorScheme;
+    document.getElementById("logo").src =
+      tg.colorScheme === "dark"
+      ? "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp"
+      : "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
+  }
+  applyTheme();
+  tg.onEvent("themeChanged", applyTheme);
+
+  /* ===== RANDOM ACCENT ===== */
+  const r=()=>Math.floor(Math.random()*200)+40;
+  document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
+  document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
+
+  /* ===== PAYLOAD ===== */
+  const raw = tg.initDataUnsafe?.start_param;
+  const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+  const [anime, episode, driveId, qual, poster] = decoded.split("|");
+
+  anime && (document.getElementById("anime").innerText="㊂ "+anime);
+  episode && (document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ",""));
+  qual && (document.getElementById("resolution").innerText="⊙ Resolution: "+qual);
+  document.getElementById("poster").src = poster || "https://i.imgur.com/8RKXAIV.jpg";
+
+  /* ===== ACTIONS ===== */
+  function go(){
+    document.getElementById("loader").classList.add("show");
+    setTimeout(()=>{
+      location.href="player.html?id="+driveId;
+    },2500);
+  }
 
   function toggleMenu(){
-    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebar").classList.toggle("show");
   }
 
   function openLink(url){
-    Telegram.WebApp.openLink(url);
+    tg.openLink(url);
   }
 
-  function openTG(url){
-    Telegram.WebApp.openTelegramLink(url);
+  function doSearch(){
+    const q=document.getElementById("search").value.trim();
+    if(q) tg.openLink("https://animetoki.com/?s="+encodeURIComponent(q));
   }
 </script>
 
