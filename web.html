@@ -2,227 +2,128 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>AnimeToki • Browse</title>
+  <title>AnimeToki Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     :root{
-      --accent:#3b82f6;
-      --bg:#000;
+      --accent:#6366f1;
+      --bg:#020617;
       --card:#020617;
       --text:#e5e7eb;
     }
-
-    body.light{
-      --bg:#f8fafc;
-      --card:#ffffff;
-      --text:#020617;
-    }
-
     body{
-      margin:0;
-      padding:16px;
       background:var(--bg);
       color:var(--text);
-      font-family:Arial,sans-serif;
-      transition:.3s;
-    }
-
-    /* ===== HEADER ===== */
-    .header{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      padding-bottom:10px;
-      margin-bottom:14px;
-      border-bottom:1px solid rgba(255,255,255,.12);
-    }
-
-    body.light .header{
-      border-bottom:1px solid rgba(0,0,0,.12);
-    }
-
-    .menu-btn{
-      position:absolute;
-      left:0;
-      font-size:22px;
-      cursor:pointer;
-    }
-
-    .theme-btn{
-      position:absolute;
-      right:0;
-      font-size:20px;
-      cursor:pointer;
-    }
-
-    .logo{height:36px}
-
-    /* ===== SEARCH ===== */
-    .search{
-      display:flex;
-      margin-bottom:18px;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:12px;
-      overflow:hidden;
-    }
-
-    body.light .search{
-      border:1px solid rgba(0,0,0,.15);
-    }
-
-    .search input{
-      flex:1;
-      padding:10px 12px;
-      border:none;
-      outline:none;
-      background:var(--card);
-      color:var(--text);
-      font-weight:600;
-    }
-
-    .search button{
-      padding:0 14px;
-      border:none;
-      background:var(--accent);
-      color:white;
-      font-size:18px;
-      cursor:pointer;
-    }
-
-    /* ===== SECTION ===== */
-    h3{
-      margin:16px 0 10px;
-    }
-
-    .row{
-      display:flex;
-      gap:12px;
-      overflow-x:auto;
+      font-family:Arial;
+      margin:0;
+      padding:16px;
     }
 
     .card{
-      min-width:140px;
       background:var(--card);
-      border-radius:12px;
+      border-radius:16px;
       overflow:hidden;
-      cursor:pointer;
+      box-shadow:0 0 25px rgba(0,0,0,.6);
     }
 
-    .card img{
+    .poster{
       width:100%;
-      height:190px;
+      height:180px;
       object-fit:cover;
     }
 
-    .card p{
-      padding:8px;
-      font-size:13px;
-      font-weight:700;
+    .content{padding:14px}
+    .title{font-size:20px;font-weight:800}
+
+    .meta span{
+      display:block;
+      font-size:14px;
+      margin-top:6px;
+      opacity:.9;
     }
 
-    /* ===== DONATE ===== */
-    .donate{
-      margin:26px 0;
-      padding:14px;
-      border-radius:14px;
-      text-align:center;
-      background:linear-gradient(135deg,#f59e0b,#ef4444);
+    .btn{
+      margin-top:16px;
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),#000);
       color:white;
-      font-weight:900;
-      cursor:pointer;
+      font-size:16px;
+      font-weight:800;
     }
 
-    /* ===== FOOTER ===== */
-    .footer{
-      text-align:center;
-      margin-top:30px;
-      font-size:12px;
-      opacity:.6;
+    .loader{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.9);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      opacity:0;
+      pointer-events:none;
+      transition:.3s;
     }
+    .loader.show{opacity:1;pointer-events:auto}
+
+    .spin{
+      width:48px;height:48px;
+      border:5px solid #334155;
+      border-top-color:var(--accent);
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="menu-btn" onclick="history.back()">←</div>
-  <img id="logo" class="logo">
-  <div class="theme-btn" onclick="toggleTheme()">🌗</div>
+<div class="loader" id="loader">
+  <div class="spin"></div>
+  <p>Preparing stream…</p>
 </div>
 
-<!-- SEARCH -->
-<div class="search">
-  <input id="searchBox" placeholder="Search anime on AnimeToki...">
-  <button onclick="search()">🔍</button>
-</div>
-
-<!-- ONGOING -->
-<h3>🔥 Ongoing Anime</h3>
-<div class="row" id="ongoing"></div>
-
-<!-- RANDOM -->
-<h3>🎲 Random Series</h3>
-<div class="row" id="random"></div>
-
-<!-- DONATE -->
-<div class="donate" onclick="window.open('https://www.buymeacoffee.com','_blank')">
-  ☕ Buy Me a Coffee
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-  Made with ❤️ by AnimeToki · app.animetoki.com
+<div class="card">
+  <img id="poster" class="poster">
+  <div class="content">
+    <div class="title" id="anime">Anime</div>
+    <div class="meta">
+      <span id="episode">Episode --</span>
+      <span id="resolution">Resolution --</span>
+      <span>Audio: Japanese</span>
+      <span>Subtitle: English</span>
+    </div>
+    <button class="btn" onclick="go()">▶ Watch</button>
+  </div>
 </div>
 
 <script>
-  const tg = Telegram.WebApp;
-  tg.ready(); tg.expand();
+const tg = Telegram.WebApp;
+tg.ready(); tg.expand();
 
-  if(tg.colorScheme==="light") document.body.classList.add("light");
+if(!tg.initDataUnsafe?.start_param){
+  document.body.innerHTML="❌ Invalid Mini App Request";
+  throw 0;
+}
 
-  function toggleTheme(){
-    document.body.classList.toggle("light");
-    setLogo();
-  }
+const decoded = atob(
+  tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/')
+);
+const [anime,episode,id,qual,poster] = decoded.split("|");
 
-  function setLogo(){
-    const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
-    const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
-    document.getElementById("logo").src =
-      document.body.classList.contains("light") ? light : dark;
-  }
-  setLogo();
+animeEl.textContent="㊂ "+anime;
+episodeEl.textContent="Episode "+episode.replace("Episode ","");
+resolutionEl.textContent="Resolution "+qual;
+posterEl.src=poster;
 
-  function search(){
-    const q=document.getElementById("searchBox").value.trim();
-    if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
-  }
-
-  /* ===== DEMO DATA ===== */
-  const animes=[
-    {t:"Chitose Is in the Ramune Bottle",i:"https://i.imgur.com/8RKXAIV.jpg"},
-    {t:"Blue Box",i:"https://i.imgur.com/X7dF5pM.jpg"},
-    {t:"Kaiju No.8",i:"https://i.imgur.com/6QK0K1G.jpg"},
-    {t:"Wind Breaker",i:"https://i.imgur.com/0v5XGJZ.jpg"},
-    {t:"Solo Leveling",i:"https://i.imgur.com/Zx7G8Jr.jpg"}
-  ];
-
-  function fill(id,list){
-    const el=document.getElementById(id);
-    list.sort(()=>0.5-Math.random()).slice(0,5).forEach(a=>{
-      el.innerHTML+=`
-        <div class="card" onclick="window.open('https://animetoki.com','_blank')">
-          <img src="${a.i}">
-          <p>${a.t}</p>
-        </div>`;
-    });
-  }
-
-  fill("ongoing",animes);
-  fill("random",animes);
+function go(){
+  loader.classList.add("show");
+  setTimeout(()=>location.href="player.html?id="+id,2500);
+}
 </script>
 
 </body>
