@@ -7,8 +7,9 @@
 
   <style>
     :root{
-      --accent:#3b82f6;
-      --accent-dark:#020617;
+      --g1:#60a5fa;
+      --g2:#22d3ee;
+      --g3:#a78bfa;
 
       --bg:#000000;
       --card:#020617;
@@ -40,7 +41,6 @@
       margin-bottom:14px;
       border-bottom:1px solid rgba(255,255,255,.12);
     }
-
     body.light .header{
       border-bottom:1px solid rgba(0,0,0,.12);
     }
@@ -58,10 +58,7 @@
       border:1px solid rgba(255,255,255,.18);
       background:var(--card);
     }
-
-    body.light .search{
-      border:1px solid rgba(0,0,0,.18);
-    }
+    body.light .search{border:1px solid rgba(0,0,0,.18)}
 
     .search input{
       flex:1;
@@ -72,11 +69,10 @@
       color:var(--text);
       font-weight:600;
     }
-
     .search button{
       padding:0 14px;
       border:none;
-      background:var(--accent);
+      background:linear-gradient(135deg,var(--g1),var(--g3));
       color:white;
       font-size:18px;
       cursor:pointer;
@@ -129,35 +125,23 @@
     }
     .social img{width:32px;height:32px}
 
-    /* ==================================================
-       BORDER ANIMATION (MODE AWARE)
-       ================================================== */
-
-    /* Dark mode → LIGHT / NEON gradient */
+    /* ===== RANDOM BORDER (MODE AWARE) ===== */
     .border-wrap{
       padding:3px;
       border-radius:18px;
       background:linear-gradient(
         270deg,
-        #60a5fa,
-        #22d3ee,
-        #a78bfa,
-        #60a5fa
+        var(--g1),
+        var(--g2),
+        var(--g3),
+        var(--g1)
       );
       background-size:400% 400%;
       animation:borderGlow 6s ease infinite;
     }
 
-    /* Light mode → SOFT DARK gradient */
     body.light .border-wrap{
-      background:linear-gradient(
-        270deg,
-        #334155,
-        #64748b,
-        #94a3b8,
-        #334155
-      );
-      background-size:400% 400%;
+      filter:saturate(.85) brightness(.9);
     }
 
     @keyframes borderGlow{
@@ -166,18 +150,11 @@
       100%{background-position:0% 50%}
     }
 
-    /* ===== CARD ===== */
     .card{
       background:var(--card);
       border-radius:15px;
       overflow:hidden;
       box-shadow:0 0 22px rgba(0,0,0,.7);
-    }
-
-    body.light .card{
-      box-shadow:
-        0 10px 28px rgba(0,0,0,.12),
-        inset 0 0 0 1px rgba(0,0,0,.08);
     }
 
     .poster{
@@ -211,7 +188,7 @@
       align-items:center;
       justify-content:center;
       gap:10px;
-      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+      background:linear-gradient(135deg,var(--g1),var(--g3));
     }
 
     /* ===== LOADER ===== */
@@ -234,7 +211,7 @@
       width:50px;
       height:50px;
       border:5px solid #1e293b;
-      border-top-color:var(--accent);
+      border-top-color:var(--g1);
       border-radius:50%;
       animation:spin 1s linear infinite;
       margin-bottom:14px;
@@ -245,7 +222,6 @@
 
 <body>
 
-<!-- ===== SIDEBAR ===== -->
 <div id="sidebar" class="sidebar">
   <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
   <a class="side-btn" href="https://t.me/AnimeChannelSakura" onclick="Telegram.WebApp.close()">Main Channel</a>
@@ -263,26 +239,22 @@
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-<!-- ===== LOADER ===== -->
 <div id="loader" class="loader">
   <div class="spinner"></div>
   <p>Preparing stream...</p>
 </div>
 
-<!-- ===== HEADER ===== -->
 <div class="header">
   <div class="menu-btn" onclick="openMenu()">☰</div>
   <img id="logo" class="logo">
   <div class="theme-btn" onclick="toggleTheme()">🌗</div>
 </div>
 
-<!-- ===== SEARCH ===== -->
 <div class="search">
   <input id="searchBox" placeholder="Search anime...">
   <button onclick="search()">🔍</button>
 </div>
 
-<!-- ===== CARD ===== -->
 <div class="border-wrap">
   <div class="card">
     <img id="poster" class="poster">
@@ -305,6 +277,14 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
+  /* ===== RANDOM COLORS EACH OPEN ===== */
+  function rc(){
+    return Math.floor(Math.random()*155)+80;
+  }
+  document.documentElement.style.setProperty("--g1",`rgb(${rc()},${rc()},${rc()})`);
+  document.documentElement.style.setProperty("--g2",`rgb(${rc()},${rc()},${rc()})`);
+  document.documentElement.style.setProperty("--g3",`rgb(${rc()},${rc()},${rc()})`);
+
   if(tg.colorScheme==="light") document.body.classList.add("light");
 
   function toggleTheme(){
@@ -320,14 +300,8 @@
   }
   setLogo();
 
-  function openMenu(){
-    sidebar.classList.add("show");
-    overlay.classList.add("show");
-  }
-  function closeMenu(){
-    sidebar.classList.remove("show");
-    overlay.classList.remove("show");
-  }
+  function openMenu(){sidebar.classList.add("show");overlay.classList.add("show")}
+  function closeMenu(){sidebar.classList.remove("show");overlay.classList.remove("show")}
 
   function search(){
     const q=document.getElementById("searchBox").value.trim();
