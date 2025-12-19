@@ -2,63 +2,73 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>AnimeToki Mini App</title>
+  <title>AnimeToki Player</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     :root{
-      --accent:#6366f1;
-      --bg:#020617;
-      --card:#020617;
-      --text:#e5e7eb;
+      --accent:#3b82f6;
+      --accent-dark:#020617;
     }
+
     body{
-      background:var(--bg);
-      color:var(--text);
-      font-family:Arial;
       margin:0;
+      background:#000;
+      color:#e5e7eb;
+      font-family:Arial,sans-serif;
       padding:16px;
     }
 
     .card{
-      background:var(--card);
       border-radius:16px;
       overflow:hidden;
-      box-shadow:0 0 25px rgba(0,0,0,.6);
+      box-shadow:0 0 25px rgba(0,0,0,.8);
+      background:#020617;
     }
 
     .poster{
       width:100%;
-      height:180px;
+      height:200px;
       object-fit:cover;
     }
 
     .content{padding:14px}
-    .title{font-size:20px;font-weight:800}
+
+    .title{
+      font-size:20px;
+      font-weight:800;
+      margin-bottom:8px;
+    }
 
     .meta span{
       display:block;
       font-size:14px;
-      margin-top:6px;
       opacity:.9;
+      line-height:1.6;
     }
 
-    .btn{
-      margin-top:16px;
+    .play-btn{
+      margin-top:18px;
       width:100%;
       padding:12px;
       border:none;
       border-radius:12px;
-      background:linear-gradient(135deg,var(--accent),#000);
-      color:white;
       font-size:16px;
       font-weight:800;
+      cursor:pointer;
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
     }
 
+    /* LOADER */
     .loader{
       position:fixed;
       inset:0;
-      background:rgba(2,6,23,.9);
+      background:rgba(0,0,0,.9);
       display:flex;
       align-items:center;
       justify-content:center;
@@ -70,11 +80,13 @@
     .loader.show{opacity:1;pointer-events:auto}
 
     .spin{
-      width:48px;height:48px;
-      border:5px solid #334155;
+      width:46px;
+      height:46px;
+      border:5px solid #1e293b;
       border-top-color:var(--accent);
       border-radius:50%;
       animation:spin 1s linear infinite;
+      margin-bottom:12px;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
   </style>
@@ -82,48 +94,56 @@
 
 <body>
 
-<div class="loader" id="loader">
-  <div class="spin"></div>
-  <p>Preparing stream…</p>
-</div>
-
 <div class="card">
   <img id="poster" class="poster">
   <div class="content">
     <div class="title" id="anime">Anime</div>
     <div class="meta">
-      <span id="episode">Episode --</span>
-      <span id="resolution">Resolution --</span>
-      <span>Audio: Japanese</span>
-      <span>Subtitle: English</span>
+      <span id="episode">Episode</span>
+      <span id="quality">Quality</span>
     </div>
-    <button class="btn" onclick="go()">▶ Watch</button>
+    <button class="play-btn" onclick="go()">▶️ Watch</button>
   </div>
 </div>
 
+<div id="loader" class="loader">
+  <div class="spin"></div>
+  <div>Preparing stream…</div>
+</div>
+
 <script>
-const tg = Telegram.WebApp;
-tg.ready(); tg.expand();
+  const tg = Telegram.WebApp;
+  tg.ready(); tg.expand();
 
-if(!tg.initDataUnsafe?.start_param){
-  document.body.innerHTML="❌ Invalid Mini App Request";
-  throw 0;
-}
+  /* RANDOM COLOR EACH OPEN */
+  function r(){return Math.floor(Math.random()*200)+40}
+  document.documentElement.style.setProperty(
+    "--accent",`rgb(${r()},${r()},${r()})`
+  );
 
-const decoded = atob(
-  tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/')
-);
-const [anime,episode,id,qual,poster] = decoded.split("|");
+  const params = new URLSearchParams(location.search);
+  const raw = params.get("startapp");
 
-animeEl.textContent="㊂ "+anime;
-episodeEl.textContent="Episode "+episode.replace("Episode ","");
-resolutionEl.textContent="Resolution "+qual;
-posterEl.src=poster;
+  if(!raw){
+    document.body.innerHTML="❌ Invalid request";
+    throw new Error("No payload");
+  }
 
-function go(){
-  loader.classList.add("show");
-  setTimeout(()=>location.href="player.html?id="+id,2500);
-}
+  const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+  const [anime, episode, driveId, qual, poster] = decoded.split("|");
+
+  document.getElementById("anime").innerText = anime;
+  document.getElementById("episode").innerText = episode;
+  document.getElementById("quality").innerText = "Quality: " + qual;
+  document.getElementById("poster").src =
+    poster || "https://i.imgur.com/8RKXAIV.jpg";
+
+  function go(){
+    loader.classList.add("show");
+    setTimeout(()=>{
+      location.href = "player.html?id=" + driveId;
+    },2500);
+  }
 </script>
 
 </body>
