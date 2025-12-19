@@ -14,23 +14,16 @@
       --border:#1e293b;
     }
 
-    body.light{
-      --bg:#f8fafc;
-      --card:#ffffff;
-      --text:#020617;
-      --border:#cbd5f5;
-    }
-
     body{
       background:var(--bg);
       color:var(--text);
       font-family:Arial,sans-serif;
       padding:14px;
       margin:0;
-      transition:.3s;
+      overflow-x:hidden;
     }
 
-    /* ===== HEADER ===== */
+    /* ================= HEADER ================= */
     .topbar{
       display:grid;
       grid-template-columns:40px 1fr 40px;
@@ -45,7 +38,6 @@
       font-weight:900;
       cursor:pointer;
       user-select:none;
-      text-align:left;
     }
 
     .logo{
@@ -56,45 +48,72 @@
       height:32px;
     }
 
-    .mode-btn{
-      background:none;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      padding:6px 10px;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:700;
-      justify-self:end;
-    }
-
-    /* ===== SEARCH ===== */
-    .search-box{
-      margin:14px 0;
+    /* ================= SIDEBAR ================= */
+    .sidebar{
+      position:fixed;
+      top:0;
+      left:-260px;
+      width:260px;
+      height:100%;
+      background:#020617;
+      box-shadow:4px 0 25px rgba(0,0,0,.7);
+      padding:20px;
+      transition:.35s ease;
+      z-index:9999;
       display:flex;
-      gap:8px;
+      flex-direction:column;
+      justify-content:space-between;
     }
 
-    .search-box input{
-      flex:1;
+    .sidebar.open{
+      left:0;
+    }
+
+    .side-title{
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:20px;
+      color:var(--accent);
+    }
+
+    .side-btn{
+      padding:12px;
+      margin-bottom:12px;
+      border-radius:10px;
+      background:#020617;
+      border:1px solid var(--border);
+      font-weight:800;
+      cursor:pointer;
+      text-align:left;
+    }
+
+    .side-btn:hover{
+      background:var(--accent);
+      color:#fff;
+    }
+
+    .socials{
+      border-top:1px solid var(--border);
+      padding-top:16px;
+    }
+
+    .social-btn{
+      width:100%;
       padding:10px;
       border-radius:10px;
+      margin-bottom:10px;
+      background:#020617;
       border:1px solid var(--border);
-      background:var(--card);
-      color:var(--text);
-      font-size:15px;
-    }
-
-    .search-box button{
-      padding:10px 14px;
-      border-radius:10px;
-      border:none;
-      background:var(--accent);
-      color:white;
       font-weight:800;
       cursor:pointer;
     }
 
-    /* ===== CARD ===== */
+    .social-btn:hover{
+      background:var(--accent);
+      color:white;
+    }
+
+    /* ================= CARD ================= */
     .border-wrap{
       padding:3px;
       border-radius:18px;
@@ -113,17 +132,15 @@
       background:var(--card);
       border-radius:15px;
       overflow:hidden;
-      box-shadow:0 0 22px rgba(0,0,0,.6);
     }
 
     .poster{
       width:100%;
       height:180px;
       object-fit:cover;
-      display:block;
     }
 
-    .content{ padding:14px; }
+    .content{padding:14px}
 
     .title{
       font-size:20px;
@@ -153,83 +170,60 @@
       gap:10px;
       background:linear-gradient(135deg,var(--accent),#020617);
     }
-
-    /* ===== LOADER ===== */
-    .loader{
-      position:fixed;
-      inset:0;
-      background:rgba(2,6,23,.85);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      z-index:999;
-      opacity:0;
-      pointer-events:none;
-      transition:.3s;
-    }
-
-    .loader.show{opacity:1;pointer-events:auto}
-
-    .spinner{
-      width:48px;
-      height:48px;
-      border:5px solid var(--border);
-      border-top-color:var(--accent);
-      border-radius:50%;
-      animation:spin 1s linear infinite;
-      margin-bottom:12px;
-    }
-
-    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 
 <body>
 
-<!-- ===== LOADER ===== -->
-<div id="loader" class="loader">
-  <div class="spinner"></div>
-  <b>Preparing stream…</b>
-</div>
+<!-- ================= SIDEBAR ================= -->
+<div id="sidebar" class="sidebar">
 
-<!-- ===== HEADER ===== -->
-<div class="topbar">
+  <div>
+    <div class="side-title">AnimeToki Menu</div>
 
-  <!-- MENU -->
-  <div class="menu-btn" onclick="openMenu()">☰</div>
+    <div class="side-btn" onclick="openLink('https://animetoki.com/')">
+      📺 All Anime
+    </div>
 
-  <!-- LOGO CENTER -->
-  <div class="logo">
-    <img id="logo" src="">
+    <div class="side-btn" onclick="openTG('https://t.me/AnimeChannelSakura')">
+      📢 Main Channel
+    </div>
+
+    <div class="side-btn" onclick="openTG('https://t.me/anime_toki')">
+      🔥 Ongoing Anime
+    </div>
   </div>
 
-  <!-- MODE -->
-  <button class="mode-btn" onclick="toggleMode()">🌗</button>
+  <div class="socials">
+    <div class="social-btn" onclick="openLink('https://www.facebook.com/profile.php?id=61580271211687')">
+      🌐 Facebook
+    </div>
+    <div class="social-btn" onclick="openTG('https://t.me/Ani_Animesh')">
+      ✈️ Telegram
+    </div>
+  </div>
 
 </div>
 
-<!-- ===== SEARCH ===== -->
-<div class="search-box">
-  <input id="search" placeholder="Search anime on AnimeToki…">
-  <button onclick="searchAnime()">Search</button>
+<!-- ================= HEADER ================= -->
+<div class="topbar">
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div class="logo">
+    <img src="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp">
+  </div>
+  <div></div>
 </div>
 
-<!-- ===== CARD ===== -->
+<!-- ================= CARD ================= -->
 <div class="border-wrap">
   <div class="card">
-    <img id="poster" class="poster">
+    <img class="poster" src="https://i.imgur.com/8RKXAIV.jpg">
     <div class="content">
-      <div class="title" id="anime">㊂ Anime Name</div>
+      <div class="title">㊂ Anime Ready</div>
       <div class="meta">
-        <span id="episode">⊙ Episode: --</span>
-        <span>⊙ Audio: Japanese</span>
-        <span>⊙ Subtitle: English</span>
-        <span>⊙ Codec: HEVC</span>
-        <span id="resolution">⊙ Resolution: --</span>
         <span>⊙ Source: AnimeToki.com</span>
       </div>
-      <button class="play-btn" onclick="go()">▶️ Watch</button>
+      <button class="play-btn">▶️ Watch</button>
     </div>
   </div>
 </div>
@@ -238,53 +232,16 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
-  const logoEl = document.getElementById("logo");
-  const DARK_LOGO  = "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
-  const LIGHT_LOGO = "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
-
-  function setLogo(){
-    logoEl.src = document.body.classList.contains("light")
-      ? LIGHT_LOGO
-      : DARK_LOGO;
+  function toggleMenu(){
+    document.getElementById("sidebar").classList.toggle("open");
   }
 
-  function toggleMode(){
-    document.body.classList.toggle("light");
-    localStorage.setItem("mode",document.body.classList.contains("light"));
-    setLogo();
+  function openLink(url){
+    Telegram.WebApp.openLink(url);
   }
 
-  if(localStorage.getItem("mode")==="true"){
-    document.body.classList.add("light");
-  }
-  setLogo();
-
-  function openMenu(){
-    Telegram.WebApp.openLink("https://animetoki.com/");
-  }
-
-  function searchAnime(){
-    const q=document.getElementById("search").value.trim();
-    if(!q) return;
-    Telegram.WebApp.openLink(
-      "https://animetoki.com/?s="+encodeURIComponent(q)
-    );
-  }
-
-  const raw=tg.initDataUnsafe?.start_param;
-  const decoded=atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
-  const [anime,episode,driveId,qual,poster]=decoded.split("|");
-
-  document.getElementById("anime").innerText="㊂ "+anime;
-  document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
-  document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
-  document.getElementById("poster").src=poster||"https://i.imgur.com/8RKXAIV.jpg";
-
-  function go(){
-    document.getElementById("loader").classList.add("show");
-    setTimeout(()=>{
-      location.href="player.html?id="+driveId;
-    },2500);
+  function openTG(url){
+    Telegram.WebApp.openTelegramLink(url);
   }
 </script>
 
