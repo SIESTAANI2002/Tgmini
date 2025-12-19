@@ -7,9 +7,8 @@
 
   <style>
     :root{
-      --g1:#60a5fa;
-      --g2:#22d3ee;
-      --g3:#a78bfa;
+      --accent:#3b82f6;
+      --accent-dark:#020617;
 
       --bg:#000000;
       --card:#020617;
@@ -31,7 +30,7 @@
       transition:.3s;
     }
 
-    /* ===== HEADER ===== */
+    /* HEADER */
     .header{
       display:flex;
       align-items:center;
@@ -49,36 +48,31 @@
     .theme-btn{position:absolute;right:0;font-size:20px;cursor:pointer}
     .logo{height:36px}
 
-    /* ===== SEARCH ===== */
-    .search{
-      display:flex;
-      margin-bottom:14px;
-      border-radius:12px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.18);
-      background:var(--card);
-    }
-    body.light .search{border:1px solid rgba(0,0,0,.18)}
-
+    /* SEARCH */
+    .search{display:flex;margin-bottom:14px}
     .search input{
       flex:1;
       padding:10px 12px;
-      border:none;
-      outline:none;
-      background:transparent;
+      border-radius:10px 0 0 10px;
+      border:1px solid rgba(255,255,255,.15);
+      background:var(--card);
       color:var(--text);
       font-weight:600;
+    }
+    body.light .search input{
+      border:1px solid rgba(0,0,0,.15);
     }
     .search button{
       padding:0 14px;
       border:none;
-      background:linear-gradient(135deg,var(--g1),var(--g3));
+      border-radius:0 10px 10px 0;
+      background:var(--accent);
       color:white;
       font-size:18px;
       cursor:pointer;
     }
 
-    /* ===== OVERLAY ===== */
+    /* OVERLAY */
     .overlay{
       position:fixed;
       inset:0;
@@ -91,7 +85,7 @@
     }
     .overlay.show{opacity:1;pointer-events:auto}
 
-    /* ===== SIDEBAR ===== */
+    /* SIDEBAR */
     .sidebar{
       position:fixed;
       top:0;
@@ -125,23 +119,16 @@
     }
     .social img{width:32px;height:32px}
 
-    /* ===== RANDOM BORDER (MODE AWARE) ===== */
+    /* CARD */
     .border-wrap{
       padding:3px;
       border-radius:18px;
-      background:linear-gradient(
-        270deg,
-        var(--g1),
-        var(--g2),
-        var(--g3),
-        var(--g1)
-      );
+      background:linear-gradient(270deg,var(--accent),#000,var(--accent-dark));
       background-size:400% 400%;
       animation:borderGlow 6s ease infinite;
     }
-
     body.light .border-wrap{
-      filter:saturate(.85) brightness(.9);
+      background:linear-gradient(270deg,var(--accent),#fff,var(--accent-dark));
     }
 
     @keyframes borderGlow{
@@ -156,15 +143,12 @@
       overflow:hidden;
       box-shadow:0 0 22px rgba(0,0,0,.7);
     }
-
-    .poster{
-      width:100%;
-      height:180px;
-      object-fit:cover;
+    body.light .card{
+      box-shadow:0 10px 28px rgba(0,0,0,.12);
     }
 
+    .poster{width:100%;height:180px;object-fit:cover}
     .content{padding:14px}
-
     .title{font-size:20px;font-weight:800;margin-bottom:10px}
 
     .meta span{
@@ -184,14 +168,10 @@
       font-weight:800;
       cursor:pointer;
       color:white;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      background:linear-gradient(135deg,var(--g1),var(--g3));
+      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
     }
 
-    /* ===== LOADER ===== */
+    /* LOADER */
     .loader{
       position:fixed;
       inset:0;
@@ -211,7 +191,7 @@
       width:50px;
       height:50px;
       border:5px solid #1e293b;
-      border-top-color:var(--g1);
+      border-top-color:var(--accent);
       border-radius:50%;
       animation:spin 1s linear infinite;
       margin-bottom:14px;
@@ -222,10 +202,20 @@
 
 <body>
 
+<!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
   <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
-  <a class="side-btn" href="https://t.me/AnimeChannelSakura" onclick="Telegram.WebApp.close()">Main Channel</a>
-  <a class="side-btn" href="https://t.me/anime_toki" onclick="Telegram.WebApp.close()">Ongoing Anime</a>
+
+  <!-- ✅ FIXED BUTTONS -->
+  <a class="side-btn" href="javascript:void(0)"
+     onclick="openTG('https://t.me/AnimeChannelSakura')">
+     Main Channel
+  </a>
+
+  <a class="side-btn" href="javascript:void(0)"
+     onclick="openTG('https://t.me/anime_toki')">
+     Ongoing Anime
+  </a>
 
   <div class="social">
     <a href="https://www.facebook.com/profile.php?id=61580271211687" target="_blank">
@@ -244,17 +234,20 @@
   <p>Preparing stream...</p>
 </div>
 
+<!-- HEADER -->
 <div class="header">
   <div class="menu-btn" onclick="openMenu()">☰</div>
   <img id="logo" class="logo">
   <div class="theme-btn" onclick="toggleTheme()">🌗</div>
 </div>
 
+<!-- SEARCH -->
 <div class="search">
   <input id="searchBox" placeholder="Search anime...">
   <button onclick="search()">🔍</button>
 </div>
 
+<!-- CONTENT -->
 <div class="border-wrap">
   <div class="card">
     <img id="poster" class="poster">
@@ -277,13 +270,10 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
-  /* ===== RANDOM COLORS EACH OPEN ===== */
-  function rc(){
-    return Math.floor(Math.random()*155)+80;
-  }
-  document.documentElement.style.setProperty("--g1",`rgb(${rc()},${rc()},${rc()})`);
-  document.documentElement.style.setProperty("--g2",`rgb(${rc()},${rc()},${rc()})`);
-  document.documentElement.style.setProperty("--g3",`rgb(${rc()},${rc()},${rc()})`);
+  /* RANDOM BORDER COLOR */
+  function r(){return Math.floor(Math.random()*200)+40}
+  document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
+  document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
 
   if(tg.colorScheme==="light") document.body.classList.add("light");
 
@@ -295,31 +285,40 @@
   function setLogo(){
     const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
     const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
-    document.getElementById("logo").src =
-      document.body.classList.contains("light") ? light : dark;
+    logo.src=document.body.classList.contains("light")?light:dark;
   }
   setLogo();
 
   function openMenu(){sidebar.classList.add("show");overlay.classList.add("show")}
   function closeMenu(){sidebar.classList.remove("show");overlay.classList.remove("show")}
 
+  /* ✅ TELEGRAM LINK FIX */
+  function openTG(link){
+    Telegram.WebApp.openTelegramLink(link);
+    Telegram.WebApp.close();
+  }
+
   function search(){
-    const q=document.getElementById("searchBox").value.trim();
+    const q=searchBox.value.trim();
     if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
   }
 
   const decoded=atob(tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime,episode,driveId,qual,poster]=decoded.split("|");
 
-  document.getElementById("anime").innerText="㊂ "+anime;
-  document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
-  document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
-  document.getElementById("poster").src=poster;
+  animeEl.innerText="㊂ "+anime;
+  episodeEl.innerText="⊙ Episode: "+episode.replace("Episode ","");
+  resolution.innerText="⊙ Resolution: "+qual;
+  posterImg.src=poster;
 
   function go(){
     loader.classList.add("show");
     setTimeout(()=>location.href="player.html?id="+driveId,2500);
   }
+
+  const animeEl=document.getElementById("anime");
+  const episodeEl=document.getElementById("episode");
+  const posterImg=document.getElementById("poster");
 </script>
 
 </body>
