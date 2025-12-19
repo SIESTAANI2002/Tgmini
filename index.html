@@ -32,17 +32,28 @@
 
     /* ===== HEADER ===== */
     .topbar{
-      display:flex;
+      display:grid;
+      grid-template-columns:40px 1fr 40px;
       align-items:center;
-      justify-content:space-between;
       padding:10px 4px 14px;
       margin-bottom:14px;
       border-bottom:1px solid var(--border);
     }
 
+    .menu-btn{
+      font-size:22px;
+      font-weight:900;
+      cursor:pointer;
+      user-select:none;
+      text-align:left;
+    }
+
+    .logo{
+      text-align:center;
+    }
+
     .logo img{
       height:32px;
-      display:block;
     }
 
     .mode-btn{
@@ -53,6 +64,7 @@
       border-radius:8px;
       cursor:pointer;
       font-weight:700;
+      justify-self:end;
     }
 
     /* ===== SEARCH ===== */
@@ -183,10 +195,18 @@
 
 <!-- ===== HEADER ===== -->
 <div class="topbar">
+
+  <!-- MENU -->
+  <div class="menu-btn" onclick="openMenu()">☰</div>
+
+  <!-- LOGO CENTER -->
   <div class="logo">
     <img id="logo" src="">
   </div>
+
+  <!-- MODE -->
   <button class="mode-btn" onclick="toggleMode()">🌗</button>
+
 </div>
 
 <!-- ===== SEARCH ===== -->
@@ -238,6 +258,10 @@
     document.body.classList.add("light");
   }
   setLogo();
+
+  function openMenu(){
+    Telegram.WebApp.openLink("https://animetoki.com/");
+  }
 
   function searchAnime(){
     const q=document.getElementById("search").value.trim();
