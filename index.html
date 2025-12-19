@@ -2,56 +2,57 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>AnimeToki – Web</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AnimeToki</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body{
+      margin:0;
+      background:#000;
+      color:#fff;
+      font-family:Arial,sans-serif;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      text-align:center;
+    }
+    .box{
+      max-width:420px;
+      padding:24px;
+    }
+    h1{margin-bottom:10px}
+    p{opacity:.7}
+    a{
+      display:inline-block;
+      margin-top:18px;
+      padding:12px 18px;
+      background:#2563eb;
+      color:#fff;
+      text-decoration:none;
+      border-radius:10px;
+      font-weight:700;
+    }
+  </style>
 </head>
 
-<body style="margin:0;font-family:Arial;background:#0f172a;color:white">
+<body>
 
-  <h2 style="padding:20px;text-align:center">
-    🎬 Welcome to AnimeToki Web
-  </h2>
-
-  <p style="text-align:center;opacity:.8">
-    Browse anime, discover new series & support us ❤️
-  </p>
-
-  <!-- SEARCH -->
-  <div style="display:flex;max-width:420px;margin:20px auto">
-    <input id="q" placeholder="Search anime..."
-      style="flex:1;padding:12px;border-radius:8px 0 0 8px;border:none">
-    <button onclick="search()"
-      style="padding:12px 16px;border:none;background:#6366f1;color:white;border-radius:0 8px 8px 0">
-      🔍
-    </button>
-  </div>
-
-  <!-- PLACEHOLDER CAROUSEL -->
-  <div style="text-align:center;opacity:.6;margin-top:30px">
-    🔄 Anime Carousel (ongoing / random anime)
-  </div>
-
-  <!-- DONATE -->
-  <div style="text-align:center;margin-top:40px">
-    <a href="https://www.buymeacoffee.com"
-       target="_blank"
-       style="background:#facc15;color:#000;
-              padding:12px 20px;border-radius:10px;
-              text-decoration:none;font-weight:700">
-      ☕ Buy Me a Coffee
-    </a>
-  </div>
-
-  <!-- FOOTER -->
-  <div style="margin-top:60px;text-align:center;font-size:13px;opacity:.6">
-    Crafted with ❤️ by Animesh • Powered by AnimeToki
-  </div>
+<div class="box">
+  <h1>AnimeToki</h1>
+  <p>Watch & download anime with best quality.</p>
+  <a href="https://animetoki.com" target="_blank">Visit Website</a>
+</div>
 
 <script>
-function search(){
-  const q=document.getElementById("q").value.trim();
-  if(q) location.href="https://animetoki.com/?s="+encodeURIComponent(q);
-}
+  const tg = window.Telegram?.WebApp;
+  const payload = tg?.initDataUnsafe?.start_param;
+
+  /* ✅ PAYLOAD থাকলে → MINI APP */
+  if (payload && payload.length > 5) {
+    location.replace("mini.html?startapp=" + encodeURIComponent(payload));
+  }
+
+  /* ❌ PAYLOAD না থাকলে → এই page (Web UI) */
 </script>
 
 </body>
