@@ -2,52 +2,39 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>AnimeToki Player</title>
+  <title>Anime Player</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     :root{
-      --bg:#000;
-      --card:#020617;
-      --text:#e5e7eb;
       --accent:#3b82f6;
-    }
-
-    body.light{
-      --bg:#f8fafc;
-      --card:#ffffff;
-      --text:#020617;
+      --bg:#0b0b0b;
+      --card:#111827;
+      --text:#e5e7eb;
     }
 
     body{
       margin:0;
+      font-family:Arial,sans-serif;
       background:var(--bg);
       color:var(--text);
-      font-family:Arial,sans-serif;
-      transition:.3s;
     }
 
     /* ===== HEADER ===== */
     .header{
-      display:flex;
-      align-items:center;
-      gap:10px;
       padding:12px;
+      text-align:center;
+      background:rgba(2,6,23,.85);
+      backdrop-filter:blur(6px);
       border-bottom:1px solid rgba(255,255,255,.12);
-    }
-    body.light .header{
-      border-bottom:1px solid rgba(0,0,0,.12);
-    }
-
-    .back{
-      font-size:20px;
-      cursor:pointer;
     }
 
     .title{
       font-size:14px;
-      font-weight:700;
+      font-weight:800;
       line-height:1.4;
+      letter-spacing:.3px;
+      opacity:.95;
     }
 
     /* ===== PLAYER ===== */
@@ -59,37 +46,43 @@
       width:100%;
       height:220px;
       border:none;
-      border-radius:12px;
+      border-radius:14px;
       background:#000;
+      box-shadow:0 10px 35px rgba(0,0,0,.6);
     }
 
     /* ===== BUTTONS ===== */
     .btn{
-      margin-top:12px;
-      padding:12px;
-      border-radius:10px;
+      margin-top:14px;
+      padding:13px;
+      border-radius:12px;
       font-size:16px;
       font-weight:800;
       text-align:center;
       cursor:pointer;
+      transition:.2s ease;
       user-select:none;
+    }
+
+    .btn:active{
+      transform:scale(.97);
     }
 
     .stream{
       background:linear-gradient(135deg,#22c55e,#16a34a);
-      color:#fff;
+      box-shadow:0 6px 22px rgba(34,197,94,.45);
     }
 
     .download{
-      background:linear-gradient(135deg,#3b82f6,#1d4ed8);
-      color:#fff;
+      background:linear-gradient(135deg,#3b82f6,#2563eb);
+      box-shadow:0 6px 22px rgba(59,130,246,.45);
     }
 
     /* ===== LOADER ===== */
     .loader{
       position:fixed;
       inset:0;
-      background:rgba(2,6,23,.88);
+      background:rgba(2,6,23,.9);
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -99,28 +92,20 @@
       pointer-events:none;
       transition:.3s;
     }
+
     .loader.show{
       opacity:1;
       pointer-events:auto;
     }
 
-    body.light .loader{
-      background:rgba(255,255,255,.95);
-    }
-
     .spinner{
-      width:48px;
-      height:48px;
+      width:54px;
+      height:54px;
       border:5px solid #1e293b;
       border-top-color:var(--accent);
       border-radius:50%;
       animation:spin 1s linear infinite;
-      margin-bottom:14px;
-    }
-
-    body.light .spinner{
-      border:5px solid #cbd5f5;
-      border-top-color:var(--accent);
+      margin-bottom:16px;
     }
 
     @keyframes spin{
@@ -129,38 +114,20 @@
 
     .loader p{
       font-weight:700;
-      color:#e5e7eb;
-    }
-    body.light .loader p{
-      color:#020617;
-    }
-
-    /* ===== ERROR ===== */
-    .error{
-      padding:40px;
-      text-align:center;
-      font-weight:700;
+      opacity:.9;
     }
   </style>
 </head>
 
 <body>
 
-<!-- LOADER -->
-<div id="loader" class="loader">
-  <div class="spinner"></div>
-  <p>Loading player…</p>
-</div>
-
 <!-- HEADER -->
 <div class="header">
-  <div class="back" onclick="goBack()">⬅</div>
-  <div class="title" id="title">Anime</div>
+  <div class="title" id="title">Loading...</div>
 </div>
 
-<!-- CONTENT -->
+<!-- PLAYER -->
 <div class="container">
-
   <iframe id="player"></iframe>
 
   <div class="btn stream" onclick="openStream()">
@@ -170,7 +137,12 @@
   <div class="btn download" onclick="downloadFile()">
     ⬇️ Download
   </div>
+</div>
 
+<!-- LOADER -->
+<div id="loader" class="loader">
+  <div class="spinner"></div>
+  <p>Preparing your episode…</p>
 </div>
 
 <script>
@@ -178,50 +150,34 @@
   tg.ready();
   tg.expand();
 
-  if(tg.colorScheme === "light"){
-    document.body.classList.add("light");
-  }
-
-  const loader = document.getElementById("loader");
-  loader.classList.add("show");
-
-  // ===== PAYLOAD =====
   const raw = tg.initDataUnsafe?.start_param;
   if(!raw){
-    document.body.innerHTML =
-      "<div class='error'>❌ Invalid or expired link</div>";
+    document.body.innerHTML="❌ Invalid request";
     throw new Error("No payload");
   }
 
   const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
-  const [anime, episode, driveId, quality] = decoded.split("|");
+  const [title, episode, driveId, quality] = decoded.split("|");
 
   document.getElementById("title").innerText =
-    `${anime} • ${episode} • ${quality}`;
+    `${title} • ${episode} • ${quality}`;
 
   const previewUrl =
     `https://drive.google.com/file/d/${driveId}/preview?rm=minimal`;
 
-  const iframe = document.getElementById("player");
-  iframe.src = previewUrl;
-
-  iframe.onload = () => {
-    loader.classList.remove("show");
-  };
-
-  // ===== ACTIONS =====
-  function goBack(){
-    history.back();
-  }
+  document.getElementById("player").src = previewUrl;
 
   function openStream(){
-    window.location.href = "stream.html?id=" + driveId;
+    location.href = "stream.html";
   }
 
   function downloadFile(){
-    const url =
+    const downloadUrl =
       `https://drive.google.com/uc?export=download&id=${driveId}`;
-    Telegram.WebApp.openLink(url,{try_instant_view:false});
+
+    Telegram.WebApp.openLink(downloadUrl,{
+      try_instant_view:false
+    });
   }
 </script>
 
