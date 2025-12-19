@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AnimeToki Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    :root{
+      --accent:#6366f1;
+      --bg:#020617;
+      --card:#020617;
+      --text:#e5e7eb;
+    }
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:Arial;
+      margin:0;
+      padding:16px;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 0 25px rgba(0,0,0,.6);
+    }
+
+    .poster{
+      width:100%;
+      height:180px;
+      object-fit:cover;
+    }
+
+    .content{padding:14px}
+    .title{font-size:20px;font-weight:800}
+
+    .meta span{
+      display:block;
+      font-size:14px;
+      margin-top:6px;
+      opacity:.9;
+    }
+
+    .btn{
+      margin-top:16px;
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),#000);
+      color:white;
+      font-size:16px;
+      font-weight:800;
+    }
+
+    .loader{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.9);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      opacity:0;
+      pointer-events:none;
+      transition:.3s;
+    }
+    .loader.show{opacity:1;pointer-events:auto}
+
+    .spin{
+      width:48px;height:48px;
+      border:5px solid #334155;
+      border-top-color:var(--accent);
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+
+<body>
+
+<div class="loader" id="loader">
+  <div class="spin"></div>
+  <p>Preparing stream…</p>
+</div>
+
+<div class="card">
+  <img id="poster" class="poster">
+  <div class="content">
+    <div class="title" id="anime">Anime</div>
+    <div class="meta">
+      <span id="episode">Episode --</span>
+      <span id="resolution">Resolution --</span>
+      <span>Audio: Japanese</span>
+      <span>Subtitle: English</span>
+    </div>
+    <button class="btn" onclick="go()">▶ Watch</button>
+  </div>
+</div>
+
+<script>
+const tg = Telegram.WebApp;
+tg.ready(); tg.expand();
+
+if(!tg.initDataUnsafe?.start_param){
+  document.body.innerHTML="❌ Invalid Mini App Request";
+  throw 0;
+}
+
+const decoded = atob(
+  tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/')
+);
+const [anime,episode,id,qual,poster] = decoded.split("|");
+
+animeEl.textContent="㊂ "+anime;
+episodeEl.textContent="Episode "+episode.replace("Episode ","");
+resolutionEl.textContent="Resolution "+qual;
+posterEl.src=poster;
+
+function go(){
+  loader.classList.add("show");
+  setTimeout(()=>location.href="player.html?id="+id,2500);
+}
+</script>
+
+</body>
+</html>
