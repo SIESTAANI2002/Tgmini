@@ -79,7 +79,7 @@
       cursor:pointer;
     }
 
-    /* ===== SIDEBAR, OVERLAY ===== */
+    /* ===== SIDEBAR ===== */
     .overlay{
       position:fixed;
       inset:0;
@@ -156,20 +156,16 @@
       object-fit:cover;
     }
 
-    /* ✅ ONLY CHANGE: CONTENT BOX COLOR */
+    /* ✅ SIMPLE DARK CONTENT COLOR */
     .content{
       padding:14px;
-      background:#0b1220;
+      background:#0b1220; /* simple dark */
     }
     body.light .content{
-      background:#f9fafb;
+      background:#ffffff;
     }
 
-    .title{
-      font-size:20px;
-      font-weight:800;
-      margin-bottom:10px;
-    }
+    .title{font-size:20px;font-weight:800;margin-bottom:10px}
 
     .meta span{
       display:block;
@@ -195,7 +191,38 @@
       background:linear-gradient(135deg,var(--accent),var(--accent-dark));
     }
 
-    /* ===== FOOTER ===== */
+    /* ===== LOADER ===== */
+    .loader{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.85);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      z-index:2000;
+      opacity:0;
+      pointer-events:none;
+      transition:.3s;
+    }
+    .loader.show{opacity:1;pointer-events:auto}
+    body.light .loader{background:rgba(255,255,255,.92)}
+
+    .spinner{
+      width:50px;
+      height:50px;
+      border:5px solid #1e293b;
+      border-top-color:var(--accent);
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin-bottom:14px;
+    }
+    body.light .spinner{
+      border:5px solid #cbd5f5;
+      border-top-color:var(--accent);
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
     .footer{
       margin-top:22px;
       padding:14px 6px 6px;
@@ -210,31 +237,53 @@
 
 <body>
 
+<div id="sidebar" class="sidebar">
+  <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
+  <a class="side-btn" href="#" onclick="Telegram.WebApp.openTelegramLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
+  <a class="side-btn" href="#" onclick="Telegram.WebApp.openTelegramLink('https://t.me/anime_toki')">Ongoing Anime</a>
+
+  <div class="social">
+    <a href="https://www.facebook.com/profile.php?id=61580271211687" target="_blank">
+      <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png">
+    </a>
+    <a href="https://t.me/Ani_Animesh" target="_blank">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+    </a>
+  </div>
+</div>
+
+<div id="overlay" class="overlay" onclick="closeMenu()"></div>
+
+<div id="loader" class="loader">
+  <div class="spinner"></div>
+  <p>Preparing stream...</p>
+</div>
+
 <div class="header">
-  <div class="menu-btn">☰</div>
+  <div class="menu-btn" onclick="openMenu()">☰</div>
   <img id="logo" class="logo">
-  <div class="theme-btn">🌗</div>
+  <div class="theme-btn" onclick="toggleTheme()">🌗</div>
 </div>
 
 <div class="search">
-  <input placeholder="Search anime...">
-  <button>🔍</button>
+  <input id="searchBox" placeholder="Search anime...">
+  <button onclick="search()">🔍</button>
 </div>
 
 <div class="border-wrap">
   <div class="card">
-    <img class="poster" src="">
+    <img id="poster" class="poster">
     <div class="content">
-      <div class="title">㊂ Anime</div>
+      <div class="title" id="anime">㊂ Anime</div>
       <div class="meta">
-        <span>⊙ Episode: 12</span>
+        <span id="episode">⊙ Episode: --</span>
         <span>⊙ Audio: Japanese</span>
         <span>⊙ Subtitle: English</span>
         <span>⊙ Codec: HEVC</span>
-        <span>⊙ Resolution: 1080p</span>
+        <span id="resolution">⊙ Resolution: --</span>
         <span>⊙ Source: AnimeToki.com</span>
       </div>
-      <button class="play-btn">▶️ Watch</button>
+      <button class="play-btn" onclick="go()">▶️ Watch</button>
     </div>
   </div>
 </div>
@@ -242,6 +291,51 @@
 <div class="footer">
   Crafted with ❤️ by Animesh <span>•</span> Powered by AnimeToki
 </div>
+
+<script>
+  const tg = Telegram.WebApp;
+  tg.ready(); tg.expand();
+
+  function r(){return Math.floor(Math.random()*200)+40}
+  document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
+  document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
+
+  if(tg.colorScheme==="light") document.body.classList.add("light");
+
+  function toggleTheme(){
+    document.body.classList.toggle("light");
+    setLogo();
+  }
+
+  function setLogo(){
+    const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
+    const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
+    document.getElementById("logo").src =
+      document.body.classList.contains("light") ? light : dark;
+  }
+  setLogo();
+
+  function openMenu(){sidebar.classList.add("show");overlay.classList.add("show")}
+  function closeMenu(){sidebar.classList.remove("show");overlay.classList.remove("show")}
+
+  function search(){
+    const q=document.getElementById("searchBox").value.trim();
+    if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
+  }
+
+  const decoded=atob(tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/'));
+  const [anime,episode,driveId,qual,poster]=decoded.split("|");
+
+  document.getElementById("anime").innerText="㊂ "+anime;
+  document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
+  document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
+  document.getElementById("poster").src=poster;
+
+  function go(){
+    loader.classList.add("show");
+    setTimeout(()=>location.href="player.html?id="+driveId,2500);
+  }
+</script>
 
 </body>
 </html>
