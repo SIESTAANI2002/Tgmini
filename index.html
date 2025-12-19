@@ -13,8 +13,6 @@
       --bg:#000000;
       --card:#020617;
       --text:#e5e7eb;
-      --border-light:rgba(255,255,255,.12);
-      --border-dark:rgba(0,0,0,.15);
     }
 
     body.light{
@@ -40,36 +38,26 @@
       position:relative;
       padding-bottom:10px;
       margin-bottom:14px;
-      border-bottom:1px solid var(--border-light);
+      border-bottom:1px solid rgba(255,255,255,.12);
     }
     body.light .header{
-      border-bottom:1px solid var(--border-dark);
+      border-bottom:1px solid rgba(0,0,0,.12);
     }
 
-    .menu-btn{
-      position:absolute;
-      left:0;
-      font-size:22px;
-      cursor:pointer;
-    }
-    .theme-btn{
-      position:absolute;
-      right:0;
-      font-size:20px;
-      cursor:pointer;
-    }
+    .menu-btn{position:absolute;left:0;font-size:22px;cursor:pointer}
+    .theme-btn{position:absolute;right:0;font-size:20px;cursor:pointer}
     .logo{height:36px}
 
     /* ===== SEARCH ===== */
     .search{
       display:flex;
       margin-bottom:14px;
-      border:1px solid var(--border-light);
-      border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:12px;
       overflow:hidden;
     }
     body.light .search{
-      border:1px solid var(--border-dark);
+      border:1px solid rgba(0,0,0,.15);
     }
     .search input{
       flex:1;
@@ -114,7 +102,7 @@
       transition:.3s;
       z-index:1000;
     }
-    .sidebar.show{left:0}
+    .sidebar.show{transform:translateX(260px)}
 
     .side-btn{
       display:block;
@@ -125,10 +113,7 @@
       color:var(--text);
       text-decoration:none;
       font-weight:700;
-      border:1px solid var(--border-light);
-    }
-    body.light .side-btn{
-      border:1px solid var(--border-dark);
+      border:1px solid #1e293b;
     }
 
     .social{
@@ -139,26 +124,16 @@
     }
     .social img{width:32px;height:32px}
 
-    /* ===== CONTENT CARD ===== */
+    /* ===== CARD ===== */
     .border-wrap{
       padding:3px;
       border-radius:18px;
-      background:linear-gradient(
-        270deg,
-        rgba(255,255,255,.6),
-        var(--accent),
-        rgba(255,255,255,.2)
-      );
+      background:linear-gradient(270deg,var(--accent),#000,var(--accent-dark));
       background-size:400% 400%;
       animation:borderGlow 6s ease infinite;
     }
     body.light .border-wrap{
-      background:linear-gradient(
-        270deg,
-        rgba(0,0,0,.2),
-        var(--accent),
-        rgba(0,0,0,.1)
-      );
+      background:linear-gradient(270deg,var(--accent),#fff,var(--accent-dark));
     }
 
     @keyframes borderGlow{
@@ -181,12 +156,7 @@
     }
 
     .content{padding:14px}
-
-    .title{
-      font-size:20px;
-      font-weight:800;
-      margin-bottom:10px;
-    }
+    .title{font-size:20px;font-weight:800;margin-bottom:10px}
 
     .meta span{
       display:block;
@@ -212,11 +182,11 @@
       background:linear-gradient(135deg,var(--accent),var(--accent-dark));
     }
 
-    /* ===== LOADER ===== */
+    /* ===== LOADER (FIXED) ===== */
     .loader{
       position:fixed;
       inset:0;
-      background:rgba(2,6,23,.85);
+      background:rgba(2,6,23,.85); /* dark mode */
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -228,6 +198,11 @@
     }
     .loader.show{opacity:1;pointer-events:auto}
 
+    /* ✅ LIGHT MODE LOADER */
+    body.light .loader{
+      background:rgba(255,255,255,.92);
+    }
+
     .spinner{
       width:50px;
       height:50px;
@@ -237,7 +212,24 @@
       animation:spin 1s linear infinite;
       margin-bottom:14px;
     }
+
+    /* ✅ LIGHT MODE SPINNER */
+    body.light .spinner{
+      border:5px solid #cbd5f5;
+      border-top-color:var(--accent);
+    }
+
     @keyframes spin{to{transform:rotate(360deg)}}
+
+    .loader p{
+      font-weight:700;
+      color:#e5e7eb;
+    }
+
+    /* ✅ LIGHT MODE TEXT */
+    body.light .loader p{
+      color:#020617;
+    }
   </style>
 </head>
 
@@ -246,8 +238,8 @@
 <!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
   <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
-  <a class="side-btn" onclick="openTG('https://t.me/AnimeChannelSakura')">Main Channel</a>
-  <a class="side-btn" onclick="openTG('https://t.me/anime_toki')">Ongoing Anime</a>
+  <a class="side-btn" href="https://t.me/AnimeChannelSakura" onclick="Telegram.WebApp.close()">Main Channel</a>
+  <a class="side-btn" href="https://t.me/anime_toki" onclick="Telegram.WebApp.close()">Ongoing Anime</a>
 
   <div class="social">
     <a href="https://www.facebook.com/profile.php?id=61580271211687" target="_blank">
@@ -261,6 +253,7 @@
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
+<!-- LOADER -->
 <div id="loader" class="loader">
   <div class="spinner"></div>
   <p>Preparing stream...</p>
@@ -302,7 +295,6 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
-  /* RANDOM BORDER COLOR EACH OPEN */
   function r(){return Math.floor(Math.random()*200)+40}
   document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
   document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
@@ -322,26 +314,14 @@
   }
   setLogo();
 
-  function openMenu(){
-    document.getElementById("sidebar").classList.add("show");
-    document.getElementById("overlay").classList.add("show");
-  }
-  function closeMenu(){
-    document.getElementById("sidebar").classList.remove("show");
-    document.getElementById("overlay").classList.remove("show");
-  }
-
-  function openTG(link){
-    Telegram.WebApp.openTelegramLink(link);
-    Telegram.WebApp.close();
-  }
+  function openMenu(){sidebar.classList.add("show");overlay.classList.add("show")}
+  function closeMenu(){sidebar.classList.remove("show");overlay.classList.remove("show")}
 
   function search(){
     const q=document.getElementById("searchBox").value.trim();
     if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
   }
 
-  /* PAYLOAD */
   const decoded=atob(tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime,episode,driveId,qual,poster]=decoded.split("|");
 
@@ -351,7 +331,7 @@
   document.getElementById("poster").src=poster;
 
   function go(){
-    document.getElementById("loader").classList.add("show");
+    loader.classList.add("show");
     setTimeout(()=>location.href="player.html?id="+driveId,2500);
   }
 </script>
