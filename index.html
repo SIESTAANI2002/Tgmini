@@ -47,6 +47,11 @@
       height:34px;
     }
 
+    .theme-btn{
+      font-size:18px;
+      cursor:pointer;
+    }
+
     /* ===== SEARCH ===== */
     .search-wrap{
       margin:12px 0 16px;
@@ -66,6 +71,22 @@
     body[data-theme="light"] .search-wrap input{
       background:#f1f5f9;
       color:#020617;
+    }
+
+    /* ===== OVERLAY ===== */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.4);
+      opacity:0;
+      pointer-events:none;
+      transition:.3s;
+      z-index:900;
+    }
+
+    .overlay.show{
+      opacity:1;
+      pointer-events:auto;
     }
 
     /* ===== SIDEBAR ===== */
@@ -202,7 +223,7 @@
       flex-direction:column;
       align-items:center;
       justify-content:center;
-      z-index:999;
+      z-index:1100;
       opacity:0;
       pointer-events:none;
       transition:.3s;
@@ -229,7 +250,10 @@
 
 <body>
 
-<!-- ===== SIDEBAR ===== -->
+<!-- OVERLAY -->
+<div id="overlay" class="overlay" onclick="closeMenu()"></div>
+
+<!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
   <a onclick="openLink('https://animetoki.com')">All Anime</a>
   <a onclick="openLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
@@ -241,20 +265,22 @@
   </div>
 </div>
 
-<!-- ===== LOADER ===== -->
+<!-- LOADER -->
 <div id="loader" class="loader">
   <div class="spinner"></div>
   <p>Preparing stream...</p>
 </div>
 
-<!-- ===== HEADER ===== -->
+<!-- HEADER -->
 <div class="header">
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
   <img id="logo" class="logo">
-  <div style="width:24px"></div>
+
+  <div class="theme-btn" onclick="toggleTheme()">🌓</div>
 </div>
 
-<!-- ===== SEARCH ===== -->
+<!-- SEARCH -->
 <div class="search-wrap">
   <input
     id="search"
@@ -264,7 +290,7 @@
   >
 </div>
 
-<!-- ===== CARD ===== -->
+<!-- CARD -->
 <div class="border-wrap">
   <div class="card">
 
@@ -294,15 +320,21 @@
   tg.expand();
 
   /* ===== THEME ===== */
-  function applyTheme(){
-    document.body.dataset.theme = tg.colorScheme;
+  function applyTheme(mode){
+    document.body.dataset.theme = mode;
     document.getElementById("logo").src =
-      tg.colorScheme === "dark"
+      mode==="dark"
       ? "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp"
       : "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
   }
-  applyTheme();
-  tg.onEvent("themeChanged", applyTheme);
+
+  let currentTheme = tg.colorScheme || "dark";
+  applyTheme(currentTheme);
+
+  function toggleTheme(){
+    currentTheme = currentTheme==="dark" ? "light" : "dark";
+    applyTheme(currentTheme);
+  }
 
   /* ===== RANDOM ACCENT ===== */
   const r=()=>Math.floor(Math.random()*200)+40;
@@ -322,17 +354,22 @@
   /* ===== ACTIONS ===== */
   function go(){
     document.getElementById("loader").classList.add("show");
-    setTimeout(()=>{
-      location.href="player.html?id="+driveId;
-    },2500);
+    setTimeout(()=>location.href="player.html?id="+driveId,2500);
   }
 
   function toggleMenu(){
-    document.getElementById("sidebar").classList.toggle("show");
+    document.getElementById("sidebar").classList.add("show");
+    document.getElementById("overlay").classList.add("show");
+  }
+
+  function closeMenu(){
+    document.getElementById("sidebar").classList.remove("show");
+    document.getElementById("overlay").classList.remove("show");
   }
 
   function openLink(url){
     tg.openLink(url);
+    closeMenu();
   }
 
   function doSearch(){
