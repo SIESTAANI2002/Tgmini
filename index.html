@@ -14,7 +14,6 @@
   --accent:#3b82f6;
 }
 
-/* ---------- BASE ---------- */
 body{
   margin:0;
   padding:14px;
@@ -59,7 +58,6 @@ header{
   border:1px solid #1e293b;
   padding:10px;
   border-radius:8px 0 0 8px;
-  outline:none;
 }
 
 .search button{
@@ -116,7 +114,6 @@ header{
   color:#cbd5f5;
 }
 
-/* ---------- WATCH ---------- */
 .watch{
   margin-top:16px;
   width:100%;
@@ -136,6 +133,7 @@ header{
   background:rgba(0,0,0,.55);
   backdrop-filter:blur(6px);
   display:none;
+  z-index:50;
 }
 
 .sidebar{
@@ -147,6 +145,7 @@ header{
   background:#020617;
   padding:18px;
   transition:.3s;
+  z-index:60;
 }
 
 .sidebar a{
@@ -184,51 +183,46 @@ header{
 
 <body>
 
-<!-- HEADER -->
 <header>
-  <div class="menu-btn" onclick="openMenu()">☰</div>
+  <div class="menu-btn" id="menuBtn">☰</div>
 
   <div class="logo">
     <img id="logo" src="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp">
   </div>
 
-  <div class="toggle" onclick="toggleMode()">🌙</div>
+  <div class="toggle" id="modeBtn">🌙</div>
 </header>
 
-<!-- SEARCH -->
 <div class="search">
-  <input id="q" placeholder="Search anime on AnimeToki">
-  <button onclick="search()">🔍</button>
+  <input id="searchInput" placeholder="Search anime on AnimeToki">
+  <button id="searchBtn">🔍</button>
 </div>
 
-<!-- CARD -->
 <div class="border">
-<div class="card">
-  <img id="poster" class="poster">
+  <div class="card">
+    <img id="poster" class="poster">
 
-  <div class="content">
-    <div class="title" id="anime">㊂ Anime Name</div>
-    <div class="meta">
-      <span id="episode">⊙ Episode:</span>
-      <span>⊙ Audio: Japanese</span>
-      <span>⊙ Subtitle: English</span>
-      <span>⊙ Codec: HEVC</span>
-      <span id="res">⊙ Resolution:</span>
+    <div class="content">
+      <div class="title" id="anime">㊂ Anime Name</div>
+      <div class="meta">
+        <span id="episode">⊙ Episode:</span>
+        <span>⊙ Audio: Japanese</span>
+        <span>⊙ Subtitle: English</span>
+        <span>⊙ Codec: HEVC</span>
+        <span id="resolution">⊙ Resolution:</span>
+      </div>
+      <button class="watch" id="watchBtn">▶ Watch</button>
     </div>
-    <button class="watch" onclick="go()">▶ Watch</button>
   </div>
 </div>
-</div>
 
-<!-- SIDEBAR -->
-<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+<div class="overlay" id="overlay"></div>
 <div class="sidebar" id="sidebar">
   <a href="https://animetoki.com" target="_blank">All Anime</a>
   <a href="https://t.me/AnimeChannelSakura">Main Channel</a>
   <a href="https://t.me/anime_toki">Ongoing Anime</a>
 </div>
 
-<!-- LOADER -->
 <div class="loader" id="loader">
   <div class="spinner"></div>
   <p>Preparing stream...</p>
@@ -238,44 +232,59 @@ header{
 const tg = Telegram.WebApp;
 tg.ready(); tg.expand();
 
-/* PAYLOAD */
-const raw = tg.initDataUnsafe.start_param;
-const d = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
-const [anime,ep,id,q,poster] = d.split("|");
+/* ---------- ELEMENTS ---------- */
+const animeEl = document.getElementById("anime");
+const episodeEl = document.getElementById("episode");
+const resEl = document.getElementById("resolution");
+const posterEl = document.getElementById("poster");
+const logo = document.getElementById("logo");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const loader = document.getElementById("loader");
 
-animeEl.innerText="㊂ "+anime;
-episode.innerText="⊙ Episode: "+ep.replace("Episode ","");
-res.innerText="⊙ Resolution: "+q;
-posterEl = document.getElementById("poster");
+/* ---------- PAYLOAD ---------- */
+const raw = tg.initDataUnsafe?.start_param;
+if(!raw){
+  document.body.innerHTML="❌ Invalid payload";
+  throw new Error("No payload");
+}
+
+const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+const [anime, ep, id, q, poster] = decoded.split("|");
+
+animeEl.innerText = "㊂ " + anime;
+episodeEl.innerText = "⊙ Episode: " + ep.replace("Episode ","");
+resEl.innerText = "⊙ Resolution: " + q;
 posterEl.src = poster;
 
-/* WATCH */
-function go(){
+/* ---------- WATCH ---------- */
+document.getElementById("watchBtn").onclick = ()=>{
   loader.style.display="flex";
   setTimeout(()=>{
     location.href="player.html?id="+id;
   },2500);
-}
+};
 
-/* SEARCH */
-function search(){
-  let s=q.value.trim();
+/* ---------- SEARCH ---------- */
+document.getElementById("searchBtn").onclick = ()=>{
+  const s = document.getElementById("searchInput").value.trim();
   if(s) window.open("https://animetoki.com/?s="+encodeURIComponent(s));
-}
+};
 
-/* MENU */
-function openMenu(){
+/* ---------- MENU ---------- */
+document.getElementById("menuBtn").onclick = ()=>{
   sidebar.style.left="0";
   overlay.style.display="block";
-}
-function closeMenu(){
+};
+
+overlay.onclick = ()=>{
   sidebar.style.left="-260px";
   overlay.style.display="none";
-}
+};
 
-/* DARK / LIGHT */
+/* ---------- DARK / LIGHT ---------- */
 let dark=true;
-function toggleMode(){
+document.getElementById("modeBtn").onclick = ()=>{
   dark=!dark;
   document.documentElement.style.setProperty("--bg",dark?"#000":"#f8fafc");
   document.documentElement.style.setProperty("--card",dark?"#020617":"#ffffff");
@@ -284,7 +293,7 @@ function toggleMode(){
   logo.src = dark
     ? "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp"
     : "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
-}
+};
 </script>
 
 </body>
