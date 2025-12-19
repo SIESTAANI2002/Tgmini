@@ -8,88 +8,54 @@
   <style>
     :root{
       --accent:#3b82f6;
-      --bg:#0f172a;
-      --card:#020617;
-      --text:#e5e7eb;
-    }
-
-    body.light{
-      --bg:#f8fafc;
-      --card:#ffffff;
-      --text:#020617;
+      --accent-dark:#020617;
     }
 
     body{
-      background:var(--bg);
-      color:var(--text);
+      background:#0f172a;
+      color:#e5e7eb;
       font-family:Arial,sans-serif;
-      padding:14px;
+      padding:16px;
       margin:0;
-      transition:.3s;
     }
 
-    /* ===== TOP BAR ===== */
-    .topbar{
+    body.light{
+      background:#f8fafc;
+      color:#020617;
+    }
+
+    /* ===== HEADER ===== */
+    .header{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      margin-bottom:12px;
+      margin-bottom:14px;
     }
 
-    .logo{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-size:20px;
-      font-weight:900;
-    }
-
-    .logo span{
-      color:var(--accent);
+    .logo img{
+      height:34px;
+      width:auto;
+      display:block;
     }
 
     .mode-btn{
       background:none;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      padding:6px 10px;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:700;
-    }
-
-    /* ===== SEARCH ===== */
-    .search-box{
-      margin:14px 0;
-      display:flex;
-      gap:8px;
-    }
-
-    .search-box input{
-      flex:1;
-      padding:10px;
-      border-radius:10px;
-      border:1px solid #334155;
-      background:var(--card);
-      color:var(--text);
-      font-size:15px;
-    }
-
-    .search-box button{
-      padding:10px 14px;
-      border-radius:10px;
       border:none;
-      background:var(--accent);
-      color:white;
-      font-weight:800;
+      font-size:20px;
       cursor:pointer;
+      color:inherit;
     }
 
-    /* ===== CARD ===== */
+    /* ===== Animated Border ===== */
     .border-wrap{
       padding:3px;
       border-radius:18px;
-      background:linear-gradient(270deg,var(--accent),#000,var(--accent));
+      background:linear-gradient(
+        270deg,
+        var(--accent),
+        #000,
+        var(--accent-dark)
+      );
       background-size:400% 400%;
       animation:borderGlow 6s ease infinite;
     }
@@ -101,24 +67,31 @@
     }
 
     .card{
-      background:var(--card);
+      background:#020617;
       border-radius:15px;
       overflow:hidden;
-      box-shadow:0 0 22px rgba(0,0,0,.6);
+      box-shadow:0 0 22px rgba(0,0,0,.7);
+    }
+
+    body.light .card{
+      background:#ffffff;
     }
 
     .poster{
       width:100%;
       height:180px;
       object-fit:cover;
+      object-position:center top;
       display:block;
     }
 
-    .content{ padding:14px; }
+    .content{
+      padding:14px;
+    }
 
     .title{
       font-size:20px;
-      font-weight:900;
+      font-weight:800;
       margin-bottom:10px;
     }
 
@@ -127,8 +100,10 @@
       font-size:14px;
       font-weight:600;
       line-height:1.7;
+      opacity:.95;
     }
 
+    /* ===== Watch Button ===== */
     .play-btn{
       margin-top:18px;
       width:100%;
@@ -136,16 +111,22 @@
       border:none;
       border-radius:12px;
       font-size:16px;
-      font-weight:900;
+      font-weight:800;
       cursor:pointer;
       color:white;
       display:flex;
+      align-items:center;
       justify-content:center;
       gap:10px;
-      background:linear-gradient(135deg,var(--accent),#020617);
+      background:linear-gradient(
+        135deg,
+        var(--accent),
+        var(--accent-dark)
+      );
+      box-shadow:0 10px 28px rgba(0,0,0,.6);
     }
 
-    /* ===== LOADER ===== */
+    /* ===== POPUP LOADER ===== */
     .loader{
       position:fixed;
       inset:0;
@@ -157,53 +138,63 @@
       z-index:999;
       opacity:0;
       pointer-events:none;
-      transition:.3s;
+      transition:.3s ease;
     }
 
-    .loader.show{opacity:1;pointer-events:auto}
+    .loader.show{
+      opacity:1;
+      pointer-events:auto;
+    }
 
     .spinner{
-      width:48px;
-      height:48px;
-      border:5px solid #334155;
+      width:52px;
+      height:52px;
+      border:5px solid #1e293b;
       border-top-color:var(--accent);
       border-radius:50%;
       animation:spin 1s linear infinite;
-      margin-bottom:12px;
+      margin-bottom:14px;
     }
 
-    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+
+    .loader p{
+      font-weight:700;
+      opacity:.9;
+    }
   </style>
 </head>
 
 <body>
 
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <div class="logo">
+    <img id="logo"
+      src="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp"
+      alt="AnimeToki">
+  </div>
+
+  <button class="mode-btn" onclick="toggleMode()">🌓</button>
+</div>
+
 <!-- ===== LOADER ===== -->
 <div id="loader" class="loader">
   <div class="spinner"></div>
-  <b>Preparing stream…</b>
+  <p>Preparing stream...</p>
 </div>
 
-<!-- ===== TOP BAR ===== -->
-<div class="topbar">
-  <div class="logo">
-    🎬 <span>Anime</span>Toki
-  </div>
-  <button class="mode-btn" onclick="toggleMode()">🌗</button>
-</div>
-
-<!-- ===== SEARCH ===== -->
-<div class="search-box">
-  <input id="search" placeholder="Search anime on AnimeToki…">
-  <button onclick="searchAnime()">Search</button>
-</div>
-
-<!-- ===== CARD ===== -->
 <div class="border-wrap">
   <div class="card">
-    <img id="poster" class="poster">
+
+    <img id="poster" class="poster" src="" alt="Poster">
+
     <div class="content">
+
       <div class="title" id="anime">㊂ Anime Name</div>
+
       <div class="meta">
         <span id="episode">⊙ Episode: --</span>
         <span>⊙ Audio: Japanese</span>
@@ -212,48 +203,79 @@
         <span id="resolution">⊙ Resolution: --</span>
         <span>⊙ Source: AnimeToki.com</span>
       </div>
-      <button class="play-btn" onclick="go()">▶️ Watch</button>
+
+      <button class="play-btn" onclick="go()">▶️ <span>Watch</span></button>
+
     </div>
   </div>
 </div>
 
 <script>
   const tg = Telegram.WebApp;
-  tg.ready(); tg.expand();
+  tg.ready();
+  tg.expand();
 
-  /* ===== MODE ===== */
+  /* ===== RANDOM COLOR EACH OPEN ===== */
+  function rand(){ return Math.floor(Math.random()*200)+40; }
+  document.documentElement.style.setProperty(
+    "--accent", `rgb(${rand()},${rand()},${rand()})`
+  );
+  document.documentElement.style.setProperty(
+    "--accent-dark", `rgb(${rand()/2},${rand()/2},${rand()/2})`
+  );
+
+  /* ===== DARK / LIGHT MODE + LOGO ===== */
+  const logo = document.getElementById("logo");
+
+  function updateLogo(){
+    if(document.body.classList.contains("light")){
+      logo.src =
+        "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
+    }else{
+      logo.src =
+        "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
+    }
+  }
+
   function toggleMode(){
     document.body.classList.toggle("light");
-    localStorage.setItem("mode",document.body.classList.contains("light"));
+    localStorage.setItem("mode", document.body.classList.contains("light"));
+    updateLogo();
   }
+
   if(localStorage.getItem("mode")==="true"){
     document.body.classList.add("light");
   }
-
-  /* ===== SEARCH ===== */
-  function searchAnime(){
-    const q=document.getElementById("search").value.trim();
-    if(!q) return;
-    Telegram.WebApp.openLink(
-      "https://animetoki.com/?s="+encodeURIComponent(q)
-    );
-  }
+  updateLogo();
 
   /* ===== PAYLOAD ===== */
-  const raw=tg.initDataUnsafe?.start_param;
-  const decoded=atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
-  const [anime,episode,driveId,qual,poster]=decoded.split("|");
+  const raw = tg.initDataUnsafe?.start_param;
+  if(!raw){
+    document.body.innerHTML="❌ Invalid request";
+    throw new Error("No payload");
+  }
 
-  document.getElementById("anime").innerText="㊂ "+anime;
-  document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
-  document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
-  document.getElementById("poster").src=poster||"https://i.imgur.com/8RKXAIV.jpg";
+  const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+  const [anime, episode, driveId, qual, poster] = decoded.split("|");
 
-  /* ===== WATCH ===== */
+  document.getElementById("anime").innerText = "㊂ " + anime;
+  document.getElementById("episode").innerText =
+    "⊙ Episode: " + episode.replace("Episode ","");
+  document.getElementById("resolution").innerText =
+    "⊙ Resolution: " + qual;
+
+  document.getElementById("poster").src =
+    poster || "https://i.imgur.com/8RKXAIV.jpg";
+
   function go(){
     document.getElementById("loader").classList.add("show");
     setTimeout(()=>{
-      location.href="player.html?id="+driveId;
+      location.href="player.html"+
+        "?anime="+encodeURIComponent(anime)+
+        "&episode="+encodeURIComponent(episode)+
+        "&id="+driveId+
+        "&q="+qual+
+        "&poster="+encodeURIComponent(poster||"");
     },2500);
   }
 </script>
