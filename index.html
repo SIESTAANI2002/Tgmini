@@ -1,283 +1,290 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>AnimeToki</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="utf-8">
+<title>AnimeToki</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <style>
-    :root{
-      --accent:#3b82f6;
-      --accent-dark:#020617;
+<style>
+:root{
+  --bg:#000;
+  --card:#020617;
+  --soft:#0b1220;
+  --text:#e5e7eb;
+  --accent:#3b82f6;
+}
 
-      --bg:#000000;
-      --card:#020617;
-      --card-soft:#0b1220;
-      --text:#e5e7eb;
-    }
+/* ---------- BASE ---------- */
+body{
+  margin:0;
+  padding:14px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
 
-    body{
-      background:var(--bg);
-      color:var(--text);
-      font-family:Arial,sans-serif;
-      padding:16px;
-      margin:0;
-    }
+/* ---------- HEADER ---------- */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
 
-    /* ===== HEADER ===== */
-    header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:12px 6px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      margin-bottom:14px;
-    }
+.menu-btn{
+  font-size:22px;
+  cursor:pointer;
+}
 
-    .menu-btn{
-      font-size:22px;
-      cursor:pointer;
-    }
+.logo img{
+  height:32px;
+}
 
-    .logo{
-      font-weight:900;
-      font-size:20px;
-      text-align:center;
-      flex:1;
-    }
+.toggle{
+  font-size:18px;
+  cursor:pointer;
+}
 
-    /* ===== SEARCH ===== */
-    .search{
-      display:flex;
-      margin-bottom:14px;
-    }
+/* ---------- SEARCH ---------- */
+.search{
+  display:flex;
+  margin:14px 0;
+}
 
-    .search input{
-      flex:1;
-      padding:10px 12px;
-      border-radius:10px 0 0 10px;
-      border:1px solid #1e293b;
-      outline:none;
-      background:var(--card-soft);
-      color:var(--text);
-      font-weight:600;
-    }
+.search input{
+  flex:1;
+  background:var(--soft);
+  color:var(--text);
+  border:1px solid #1e293b;
+  padding:10px;
+  border-radius:8px 0 0 8px;
+  outline:none;
+}
 
-    .search button{
-      border:none;
-      padding:10px 14px;
-      border-radius:0 10px 10px 0;
-      background:var(--accent);
-      color:white;
-      font-weight:800;
-      cursor:pointer;
-    }
+.search button{
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  font-weight:700;
+  padding:10px 14px;
+  border-radius:0 8px 8px 0;
+}
 
-    /* ===== ANIMATED BORDER ===== */
-    .border-wrap{
-      padding:3px;
-      border-radius:18px;
-      background:linear-gradient(
-        270deg,
-        var(--accent),
-        #000,
-        var(--accent-dark)
-      );
-      background-size:400% 400%;
-      animation:borderGlow 6s ease infinite;
-    }
+/* ---------- CARD ---------- */
+.border{
+  padding:3px;
+  border-radius:18px;
+  background:linear-gradient(270deg,var(--accent),#000,var(--accent));
+  background-size:400% 400%;
+  animation:glow 6s ease infinite;
+}
 
-    @keyframes borderGlow{
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
-    }
+@keyframes glow{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
 
-    .card{
-      background:var(--card);
-      border-radius:15px;
-      overflow:hidden;
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,.06),
-        0 0 22px rgba(0,0,0,.7);
-    }
+.card{
+  background:var(--card);
+  border-radius:15px;
+  overflow:hidden;
+}
 
-    .poster{
-      width:100%;
-      height:180px;
-      object-fit:cover;
-      object-position:center top;
-      display:block;
-    }
+.poster{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
 
-    .content{
-      padding:14px;
-    }
+.content{
+  padding:14px;
+}
 
-    .title{
-      font-size:20px;
-      font-weight:800;
-      margin-bottom:10px;
-    }
+.title{
+  font-size:20px;
+  font-weight:800;
+  margin-bottom:8px;
+}
 
-    .meta span{
-      display:block;
-      font-size:14px;
-      font-weight:600;
-      line-height:1.7;
-      color:#cbd5f5;
-    }
+.meta span{
+  display:block;
+  font-size:14px;
+  font-weight:600;
+  line-height:1.7;
+  color:#cbd5f5;
+}
 
-    /* ===== WATCH BUTTON ===== */
-    .play-btn{
-      margin-top:18px;
-      width:100%;
-      padding:12px;
-      border:none;
-      border-radius:12px;
-      font-size:16px;
-      font-weight:800;
-      cursor:pointer;
-      color:white;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      background:linear-gradient(
-        135deg,
-        var(--accent),
-        var(--accent-dark)
-      );
-      box-shadow:0 10px 28px rgba(0,0,0,.6);
-    }
+/* ---------- WATCH ---------- */
+.watch{
+  margin-top:16px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),#020617);
+  color:white;
+  font-size:16px;
+  font-weight:800;
+}
 
-    /* ===== LOADER ===== */
-    .loader{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.85);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      z-index:999;
-      opacity:0;
-      pointer-events:none;
-      transition:.3s ease;
-    }
+/* ---------- SIDEBAR ---------- */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(6px);
+  display:none;
+}
 
-    .loader.show{
-      opacity:1;
-      pointer-events:auto;
-    }
+.sidebar{
+  position:fixed;
+  top:0;
+  left:-260px;
+  width:240px;
+  height:100%;
+  background:#020617;
+  padding:18px;
+  transition:.3s;
+}
 
-    .spinner{
-      width:52px;
-      height:52px;
-      border:5px solid #1e293b;
-      border-top-color:var(--accent);
-      border-radius:50%;
-      animation:spin 1s linear infinite;
-      margin-bottom:14px;
-    }
+.sidebar a{
+  display:block;
+  color:#e5e7eb;
+  text-decoration:none;
+  font-weight:700;
+  margin-bottom:14px;
+}
 
-    @keyframes spin{
-      to{transform:rotate(360deg)}
-    }
+/* ---------- LOADER ---------- */
+.loader{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:999;
+}
 
-    .loader p{
-      font-weight:700;
-      opacity:.9;
-    }
-  </style>
+.spinner{
+  width:50px;
+  height:50px;
+  border:5px solid #1e293b;
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 
 <body>
 
+<!-- HEADER -->
 <header>
-  <div class="menu-btn">☰</div>
-  <div class="logo">AnimeToki</div>
-  <div style="width:22px"></div>
+  <div class="menu-btn" onclick="openMenu()">☰</div>
+
+  <div class="logo">
+    <img id="logo" src="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp">
+  </div>
+
+  <div class="toggle" onclick="toggleMode()">🌙</div>
 </header>
 
+<!-- SEARCH -->
 <div class="search">
-  <input id="q" placeholder="Search anime on AnimeToki...">
+  <input id="q" placeholder="Search anime on AnimeToki">
   <button onclick="search()">🔍</button>
 </div>
 
+<!-- CARD -->
+<div class="border">
+<div class="card">
+  <img id="poster" class="poster">
+
+  <div class="content">
+    <div class="title" id="anime">㊂ Anime Name</div>
+    <div class="meta">
+      <span id="episode">⊙ Episode:</span>
+      <span>⊙ Audio: Japanese</span>
+      <span>⊙ Subtitle: English</span>
+      <span>⊙ Codec: HEVC</span>
+      <span id="res">⊙ Resolution:</span>
+    </div>
+    <button class="watch" onclick="go()">▶ Watch</button>
+  </div>
+</div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+<div class="sidebar" id="sidebar">
+  <a href="https://animetoki.com" target="_blank">All Anime</a>
+  <a href="https://t.me/AnimeChannelSakura">Main Channel</a>
+  <a href="https://t.me/anime_toki">Ongoing Anime</a>
+</div>
+
 <!-- LOADER -->
-<div id="loader" class="loader">
+<div class="loader" id="loader">
   <div class="spinner"></div>
   <p>Preparing stream...</p>
 </div>
 
-<div class="border-wrap">
-  <div class="card">
-
-    <img id="poster" class="poster" src="" alt="Poster">
-
-    <div class="content">
-      <div class="title" id="anime">㊂ Anime Name</div>
-
-      <div class="meta">
-        <span id="episode">⊙ Episode: --</span>
-        <span>⊙ Audio: Japanese</span>
-        <span>⊙ Subtitle: English</span>
-        <span>⊙ Codec: HEVC</span>
-        <span id="resolution">⊙ Resolution: --</span>
-        <span>⊙ Source: AnimeToki.com</span>
-      </div>
-
-      <button class="play-btn" onclick="go()">▶️ <span>Watch</span></button>
-    </div>
-
-  </div>
-</div>
-
 <script>
-  const tg = Telegram.WebApp;
-  tg.ready();
-  tg.expand();
+const tg = Telegram.WebApp;
+tg.ready(); tg.expand();
 
-  function rand(){ return Math.floor(Math.random()*200)+40 }
-  document.documentElement.style.setProperty(
-    "--accent",`rgb(${rand()},${rand()},${rand()})`
-  );
+/* PAYLOAD */
+const raw = tg.initDataUnsafe.start_param;
+const d = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+const [anime,ep,id,q,poster] = d.split("|");
 
-  const raw = tg.initDataUnsafe?.start_param;
-  if(!raw){
-    document.body.innerHTML="❌ Invalid request";
-    throw new Error("No payload");
-  }
+animeEl.innerText="㊂ "+anime;
+episode.innerText="⊙ Episode: "+ep.replace("Episode ","");
+res.innerText="⊙ Resolution: "+q;
+posterEl = document.getElementById("poster");
+posterEl.src = poster;
 
-  const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
-  const [anime, episode, driveId, qual, poster] = decoded.split("|");
+/* WATCH */
+function go(){
+  loader.style.display="flex";
+  setTimeout(()=>{
+    location.href="player.html?id="+id;
+  },2500);
+}
 
-  document.getElementById("anime").innerText = "㊂ " + anime;
-  document.getElementById("episode").innerText =
-    "⊙ Episode: " + episode.replace("Episode ","");
-  document.getElementById("resolution").innerText =
-    "⊙ Resolution: " + qual;
+/* SEARCH */
+function search(){
+  let s=q.value.trim();
+  if(s) window.open("https://animetoki.com/?s="+encodeURIComponent(s));
+}
 
-  document.getElementById("poster").src =
-    poster || "https://i.imgur.com/8RKXAIV.jpg";
+/* MENU */
+function openMenu(){
+  sidebar.style.left="0";
+  overlay.style.display="block";
+}
+function closeMenu(){
+  sidebar.style.left="-260px";
+  overlay.style.display="none";
+}
 
-  function go(){
-    document.getElementById("loader").classList.add("show");
-    setTimeout(()=>{
-      location.href="player.html"+
-        "?anime="+encodeURIComponent(anime)+
-        "&episode="+encodeURIComponent(episode)+
-        "&id="+driveId+
-        "&q="+qual+
-        "&poster="+encodeURIComponent(poster||"");
-    },2500);
-  }
+/* DARK / LIGHT */
+let dark=true;
+function toggleMode(){
+  dark=!dark;
+  document.documentElement.style.setProperty("--bg",dark?"#000":"#f8fafc");
+  document.documentElement.style.setProperty("--card",dark?"#020617":"#ffffff");
+  document.documentElement.style.setProperty("--text",dark?"#e5e7eb":"#020617");
 
-  function search(){
-    const q=document.getElementById("q").value.trim();
-    if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
-  }
+  logo.src = dark
+    ? "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp"
+    : "https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
+}
 </script>
 
 </body>
