@@ -9,11 +9,21 @@
     :root{
       --accent:#3b82f6;
       --accent-dark:#020617;
+
+      --bg:#0f172a;
+      --card:#020617;
+      --text:#e5e7eb;
+    }
+
+    body.light{
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --text:#020617;
     }
 
     body{
-      background:#0f172a;
-      color:#e5e7eb;
+      background:var(--bg);
+      color:var(--text);
       font-family:Arial,sans-serif;
       padding:16px;
       margin:0;
@@ -26,7 +36,7 @@
       align-items:center;
       justify-content:center;
       position:relative;
-      margin-bottom:14px;
+      margin-bottom:12px;
     }
 
     .menu-btn{
@@ -36,11 +46,43 @@
       cursor:pointer;
     }
 
-    .logo{
-      height:38px;
+    .theme-btn{
+      position:absolute;
+      right:0;
+      font-size:20px;
+      cursor:pointer;
     }
 
-    /* ===== BLUR OVERLAY ===== */
+    .logo{height:36px}
+
+    /* ===== SEARCH ===== */
+    .search{
+      display:flex;
+      margin-bottom:14px;
+    }
+
+    .search input{
+      flex:1;
+      padding:10px 12px;
+      border-radius:10px 0 0 10px;
+      border:none;
+      outline:none;
+      background:var(--card);
+      color:var(--text);
+      font-weight:600;
+    }
+
+    .search button{
+      padding:0 14px;
+      border:none;
+      border-radius:0 10px 10px 0;
+      background:var(--accent);
+      color:white;
+      font-size:18px;
+      cursor:pointer;
+    }
+
+    /* ===== OVERLAY ===== */
     .overlay{
       position:fixed;
       inset:0;
@@ -51,57 +93,43 @@
       transition:.3s;
       z-index:900;
     }
-
-    .overlay.show{
-      opacity:1;
-      pointer-events:auto;
-    }
+    .overlay.show{opacity:1;pointer-events:auto}
 
     /* ===== SIDEBAR ===== */
     .sidebar{
       position:fixed;
       top:0;
-      left:-280px;
-      width:240px;
+      left:-260px;
+      width:220px;
       height:100%;
-      background:#020617;
+      background:var(--card);
       padding:18px;
-      transition:.3s ease;
+      transition:.3s;
       z-index:1000;
     }
-
-    .sidebar.show{
-      transform:translateX(280px);
-    }
+    .sidebar.show{transform:translateX(260px)}
 
     .side-btn{
       display:block;
       padding:12px;
       margin-bottom:10px;
       border-radius:10px;
-      background:#020617;
-      color:white;
+      background:var(--card);
+      color:var(--text);
       text-decoration:none;
       font-weight:700;
       border:1px solid #1e293b;
     }
 
-    /* ===== SOCIAL ICONS ===== */
     .social{
       display:flex;
       justify-content:center;
       gap:16px;
       margin-top:20px;
     }
+    .social img{width:32px;height:32px}
 
-    .social img{
-      width:32px;
-      height:32px;
-      cursor:pointer;
-      opacity:.9;
-    }
-
-    /* ===== CARD + BORDER ===== */
+    /* ===== CARD ===== */
     .border-wrap{
       padding:3px;
       border-radius:18px;
@@ -117,7 +145,7 @@
     }
 
     .card{
-      background:#020617;
+      background:var(--card);
       border-radius:15px;
       overflow:hidden;
       box-shadow:0 0 22px rgba(0,0,0,.7);
@@ -127,16 +155,11 @@
       width:100%;
       height:180px;
       object-fit:cover;
-      object-position:center top;
     }
 
     .content{padding:14px}
 
-    .title{
-      font-size:20px;
-      font-weight:800;
-      margin-bottom:10px;
-    }
+    .title{font-size:20px;font-weight:800;margin-bottom:10px}
 
     .meta span{
       display:block;
@@ -145,7 +168,6 @@
       line-height:1.7;
     }
 
-    /* ===== WATCH BUTTON ===== */
     .play-btn{
       margin-top:18px;
       width:100%;
@@ -161,7 +183,6 @@
       justify-content:center;
       gap:10px;
       background:linear-gradient(135deg,var(--accent),var(--accent-dark));
-      box-shadow:0 10px 28px rgba(0,0,0,.6);
     }
 
     /* ===== LOADER ===== */
@@ -178,29 +199,23 @@
       pointer-events:none;
       transition:.3s;
     }
-
-    .loader.show{
-      opacity:1;
-      pointer-events:auto;
-    }
+    .loader.show{opacity:1;pointer-events:auto}
 
     .spinner{
-      width:52px;
-      height:52px;
+      width:50px;
+      height:50px;
       border:5px solid #1e293b;
       border-top-color:var(--accent);
       border-radius:50%;
       animation:spin 1s linear infinite;
       margin-bottom:14px;
     }
-
     @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 
 <body>
 
-<!-- ===== SIDEBAR ===== -->
 <div id="sidebar" class="sidebar">
   <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
   <a class="side-btn" href="https://t.me/AnimeChannelSakura" onclick="Telegram.WebApp.close()">Main Channel</a>
@@ -218,27 +233,27 @@
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-<!-- ===== LOADER ===== -->
 <div id="loader" class="loader">
   <div class="spinner"></div>
   <p>Preparing stream...</p>
 </div>
 
-<!-- ===== HEADER ===== -->
 <div class="header">
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div class="menu-btn" onclick="openMenu()">☰</div>
   <img id="logo" class="logo">
+  <div class="theme-btn" onclick="toggleTheme()">🌗</div>
 </div>
 
-<!-- ===== MAIN CARD ===== -->
+<div class="search">
+  <input id="searchBox" placeholder="Search anime...">
+  <button onclick="search()">🔍</button>
+</div>
+
 <div class="border-wrap">
   <div class="card">
-
     <img id="poster" class="poster">
-
     <div class="content">
       <div class="title" id="anime">㊂ Anime</div>
-
       <div class="meta">
         <span id="episode">⊙ Episode: --</span>
         <span>⊙ Audio: Japanese</span>
@@ -247,10 +262,8 @@
         <span id="resolution">⊙ Resolution: --</span>
         <span>⊙ Source: AnimeToki.com</span>
       </div>
-
-      <button class="play-btn" onclick="go()">▶️ <span>Watch</span></button>
+      <button class="play-btn" onclick="go()">▶️ Watch</button>
     </div>
-
   </div>
 </div>
 
@@ -258,17 +271,44 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
-  /* RANDOM COLOR EACH OPEN */
+  // random color
   function r(){return Math.floor(Math.random()*200)+40}
   document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
   document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
 
-  /* LOGO */
-  const darkLogo="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
-  const lightLogo="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
-  document.getElementById("logo").src = tg.colorScheme==="dark"?darkLogo:lightLogo;
+  // theme
+  if(tg.colorScheme==="light") document.body.classList.add("light");
 
-  /* PAYLOAD */
+  function toggleTheme(){
+    document.body.classList.toggle("light");
+    setLogo();
+  }
+
+  function setLogo(){
+    const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
+    const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
+    document.getElementById("logo").src =
+      document.body.classList.contains("light") ? light : dark;
+  }
+  setLogo();
+
+  // menu
+  function openMenu(){
+    sidebar.classList.add("show");
+    overlay.classList.add("show");
+  }
+  function closeMenu(){
+    sidebar.classList.remove("show");
+    overlay.classList.remove("show");
+  }
+
+  // search
+  function search(){
+    const q=document.getElementById("searchBox").value.trim();
+    if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
+  }
+
+  // payload
   const decoded=atob(tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime,episode,driveId,qual,poster]=decoded.split("|");
 
@@ -277,21 +317,9 @@
   document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
   document.getElementById("poster").src=poster;
 
-  function toggleMenu(){
-    sidebar.classList.add("show");
-    overlay.classList.add("show");
-  }
-
-  function closeMenu(){
-    sidebar.classList.remove("show");
-    overlay.classList.remove("show");
-  }
-
   function go(){
     loader.classList.add("show");
-    setTimeout(()=>{
-      location.href="player.html?id="+driveId;
-    },2500);
+    setTimeout(()=>location.href="player.html?id="+driveId,2500);
   }
 </script>
 
