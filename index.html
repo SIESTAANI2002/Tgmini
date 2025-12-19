@@ -45,34 +45,22 @@
       border-bottom:1px solid rgba(0,0,0,.12);
     }
 
-    .menu-btn{
-      position:absolute;
-      left:0;
-      font-size:22px;
-      cursor:pointer;
-    }
-
-    .theme-btn{
-      position:absolute;
-      right:0;
-      font-size:20px;
-      cursor:pointer;
-    }
-
+    .menu-btn{position:absolute;left:0;font-size:22px;cursor:pointer}
+    .theme-btn{position:absolute;right:0;font-size:20px;cursor:pointer}
     .logo{height:36px}
 
-    /* ===== SEARCH (FIXED VISIBILITY) ===== */
+    /* ===== SEARCH ===== */
     .search{
       display:flex;
       margin-bottom:14px;
       border-radius:12px;
       overflow:hidden;
-      border:1px solid rgba(255,255,255,.18);   /* ✅ ADDED */
+      border:1px solid rgba(255,255,255,.18);
       background:var(--card);
     }
 
     body.light .search{
-      border:1px solid rgba(0,0,0,.18);         /* ✅ LIGHT MODE */
+      border:1px solid rgba(0,0,0,.18);
     }
 
     .search input{
@@ -141,13 +129,35 @@
     }
     .social img{width:32px;height:32px}
 
-    /* ===== CARD ===== */
+    /* ==================================================
+       BORDER ANIMATION (MODE AWARE)
+       ================================================== */
+
+    /* Dark mode → LIGHT / NEON gradient */
     .border-wrap{
       padding:3px;
       border-radius:18px;
-      background:linear-gradient(270deg,var(--accent),#000,var(--accent-dark));
+      background:linear-gradient(
+        270deg,
+        #60a5fa,
+        #22d3ee,
+        #a78bfa,
+        #60a5fa
+      );
       background-size:400% 400%;
       animation:borderGlow 6s ease infinite;
+    }
+
+    /* Light mode → SOFT DARK gradient */
+    body.light .border-wrap{
+      background:linear-gradient(
+        270deg,
+        #334155,
+        #64748b,
+        #94a3b8,
+        #334155
+      );
+      background-size:400% 400%;
     }
 
     @keyframes borderGlow{
@@ -156,10 +166,7 @@
       100%{background-position:0% 50%}
     }
 
-    body.light .border-wrap{
-      background:linear-gradient(270deg,var(--accent),#fff,var(--accent-dark));
-    }
-
+    /* ===== CARD ===== */
     .card{
       background:var(--card);
       border-radius:15px;
@@ -181,18 +188,13 @@
 
     .content{padding:14px}
 
-    .title{
-      font-size:20px;
-      font-weight:800;
-      margin-bottom:10px;
-    }
+    .title{font-size:20px;font-weight:800;margin-bottom:10px}
 
     .meta span{
       display:block;
       font-size:14px;
       font-weight:600;
       line-height:1.7;
-      opacity:.95;
     }
 
     .play-btn{
@@ -243,6 +245,7 @@
 
 <body>
 
+<!-- ===== SIDEBAR ===== -->
 <div id="sidebar" class="sidebar">
   <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
   <a class="side-btn" href="https://t.me/AnimeChannelSakura" onclick="Telegram.WebApp.close()">Main Channel</a>
@@ -260,22 +263,26 @@
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
+<!-- ===== LOADER ===== -->
 <div id="loader" class="loader">
   <div class="spinner"></div>
   <p>Preparing stream...</p>
 </div>
 
+<!-- ===== HEADER ===== -->
 <div class="header">
   <div class="menu-btn" onclick="openMenu()">☰</div>
   <img id="logo" class="logo">
   <div class="theme-btn" onclick="toggleTheme()">🌗</div>
 </div>
 
+<!-- ===== SEARCH ===== -->
 <div class="search">
   <input id="searchBox" placeholder="Search anime...">
   <button onclick="search()">🔍</button>
 </div>
 
+<!-- ===== CARD ===== -->
 <div class="border-wrap">
   <div class="card">
     <img id="poster" class="poster">
@@ -297,10 +304,6 @@
 <script>
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
-
-  function r(){return Math.floor(Math.random()*200)+40}
-  document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
-  document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
 
   if(tg.colorScheme==="light") document.body.classList.add("light");
 
