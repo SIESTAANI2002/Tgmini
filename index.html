@@ -7,133 +7,107 @@
 
   <style>
     :root{
-      --accent:#ef4444;
-    }
-
-    *{
-      box-sizing:border-box;
+      --accent:#3b82f6;
+      --accent-dark:#020617;
     }
 
     body{
-      margin:0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background:#020617;
+      background:#0f172a;
       color:#e5e7eb;
-    }
-
-    /* ===== HERO SECTION ===== */
-    .hero{
-      position:relative;
-      height:240px;
-      overflow:hidden;
-    }
-
-    .hero img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      filter:brightness(.55);
-    }
-
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(
-        to top,
-        #020617 10%,
-        rgba(2,6,23,.4) 60%
-      );
-    }
-
-    .hero-content{
-      position:absolute;
-      bottom:18px;
-      left:16px;
-      right:16px;
-      z-index:2;
-    }
-
-    .anime-title{
-      font-size:22px;
-      font-weight:900;
-      line-height:1.2;
-      margin-bottom:6px;
-    }
-
-    .episode{
-      font-size:14px;
-      opacity:.9;
-    }
-
-    /* ===== INFO CARD ===== */
-    .info-card{
-      margin:-40px 14px 0;
-      background:#020617;
-      border-radius:18px;
+      font-family:Arial,sans-serif;
       padding:16px;
-      box-shadow:0 0 25px rgba(0,0,0,.7);
-      border:1px solid rgba(255,255,255,.05);
+      margin:0;
     }
 
-    .meta{
-      margin-top:10px;
+    /* ===== Animated Border ===== */
+    .border-wrap{
+      padding:3px;
+      border-radius:18px;
+      background:linear-gradient(
+        270deg,
+        var(--accent),
+        #000,
+        var(--accent-dark)
+      );
+      background-size:400% 400%;
+      animation:borderGlow 6s ease infinite;
+    }
+
+    @keyframes borderGlow{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    .card{
+      background:#020617;
+      border-radius:15px;
+      overflow:hidden;
+      box-shadow:0 0 22px rgba(0,0,0,.7);
+    }
+
+    .poster{
+      width:100%;
+      height:180px;
+      object-fit:cover;
+      object-position:center top;
+      display:block;
+    }
+
+    .content{
+      padding:14px;
+    }
+
+    .title{
+      font-size:20px;
+      font-weight:800;
+      margin-bottom:10px;
     }
 
     .meta span{
-      display:flex;
-      justify-content:space-between;
+      display:block;
       font-size:14px;
-      padding:6px 0;
-      border-bottom:1px dashed rgba(255,255,255,.06);
       font-weight:600;
+      line-height:1.7;
+      opacity:.95;
     }
 
-    .meta span:last-child{
-      border-bottom:none;
-    }
-
-    .meta b{
-      opacity:.7;
-      font-weight:700;
-    }
-
-    /* ===== WATCH BUTTON ===== */
-    .watch-btn{
+    /* ===== Watch Button ===== */
+    .play-btn{
       margin-top:18px;
       width:100%;
-      padding:14px;
+      padding:12px;
       border:none;
-      border-radius:14px;
-      font-size:17px;
-      font-weight:900;
-      color:white;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:800;
       cursor:pointer;
+      color:white;
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:12px;
+      gap:10px;
       background:linear-gradient(
         135deg,
         var(--accent),
-        #7f1d1d
+        var(--accent-dark)
       );
-      box-shadow:0 10px 30px rgba(0,0,0,.8);
+      box-shadow:0 10px 28px rgba(0,0,0,.6);
     }
 
-    /* ===== LOADER ===== */
+    /* ===== POPUP LOADER ===== */
     .loader{
       position:fixed;
       inset:0;
-      background:rgba(2,6,23,.9);
+      background:rgba(2,6,23,.85);
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:center;
+      z-index:999;
       opacity:0;
       pointer-events:none;
       transition:.3s ease;
-      z-index:999;
     }
 
     .loader.show{
@@ -148,47 +122,50 @@
       border-top-color:var(--accent);
       border-radius:50%;
       animation:spin 1s linear infinite;
-      margin-bottom:12px;
+      margin-bottom:14px;
     }
 
     @keyframes spin{
       to{transform:rotate(360deg)}
+    }
+
+    .loader p{
+      font-weight:700;
+      opacity:.9;
     }
   </style>
 </head>
 
 <body>
 
-<!-- ===== LOADER ===== -->
+<!-- ===== LOADING POPUP ===== -->
 <div id="loader" class="loader">
   <div class="spinner"></div>
-  <p>Loading episode…</p>
+  <p>Preparing stream...</p>
 </div>
 
-<!-- ===== HERO ===== -->
-<div class="hero">
-  <img id="poster" src="" alt="Poster">
-  <div class="hero-content">
-    <div class="anime-title" id="anime">Anime Name</div>
-    <div class="episode" id="ep">Episode</div>
+<div class="border-wrap">
+  <div class="card">
+
+    <img id="poster" class="poster" src="" alt="Poster">
+
+    <div class="content">
+
+      <div class="title" id="anime">㊂ Anime Name</div>
+
+      <div class="meta">
+        <span id="episode">⊙ Episode: --</span>
+        <span>⊙ Audio: Japanese</span>
+        <span>⊙ Subtitle: English</span>
+        <span>⊙ Codec: HEVC</span>
+        <span id="resolution">⊙ Resolution: --</span>
+        <span>⊙ Source: AnimeToki.com</span>
+      </div>
+
+      <button class="play-btn" onclick="go()">▶️ <span>Watch</span></button>
+
+    </div>
   </div>
-</div>
-
-<!-- ===== INFO ===== -->
-<div class="info-card">
-
-  <div class="meta">
-    <span><b>Audio</b><i>Japanese</i></span>
-    <span><b>Subtitle</b><i>English</i></span>
-    <span><b>Codec</b><i>HEVC</i></span>
-    <span><b>Resolution</b><i id="resolution">--</i></span>
-    <span><b>Source</b><i>AnimeToki</i></span>
-  </div>
-
-  <button class="watch-btn" onclick="go()">
-    ▶️ <span>Watch Episode</span>
-  </button>
-
 </div>
 
 <script>
@@ -196,32 +173,42 @@
   tg.ready();
   tg.expand();
 
-  /* Random accent each open */
-  function r(){ return Math.floor(Math.random()*200)+40 }
+  /* ===== RANDOM COLOR EACH OPEN ===== */
+  function rand(){
+    return Math.floor(Math.random()*200)+40;
+  }
   document.documentElement.style.setProperty(
-    "--accent",`rgb(${r()},${r()},${r()})`
+    "--accent", `rgb(${rand()},${rand()},${rand()})`
+  );
+  document.documentElement.style.setProperty(
+    "--accent-dark", `rgb(${rand()/2},${rand()/2},${rand()/2})`
   );
 
+  /* ===== PAYLOAD ===== */
   const raw = tg.initDataUnsafe?.start_param;
   if(!raw){
-    document.body.innerHTML="Invalid request";
+    document.body.innerHTML="❌ Invalid request";
     throw new Error("No payload");
   }
 
   const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime, episode, driveId, qual, poster] = decoded.split("|");
 
-  document.getElementById("anime").innerText = anime;
-  document.getElementById("ep").innerText = episode;
-  document.getElementById("resolution").innerText = qual;
+  document.getElementById("anime").innerText = "㊂ " + anime;
+  document.getElementById("episode").innerText =
+    "⊙ Episode: " + episode.replace("Episode ","");
+  document.getElementById("resolution").innerText =
+    "⊙ Resolution: " + qual;
 
   document.getElementById("poster").src =
     poster || "https://i.imgur.com/8RKXAIV.jpg";
 
+  /* ===== WATCH CLICK ===== */
   function go(){
-    const l=document.getElementById("loader");
-    l.classList.add("show");
+    const loader = document.getElementById("loader");
+    loader.classList.add("show");
 
+    // ⏳ 2.5 sec delay
     setTimeout(()=>{
       location.href="player.html"+
         "?anime="+encodeURIComponent(anime)+
@@ -229,7 +216,7 @@
         "&id="+driveId+
         "&q="+qual+
         "&poster="+encodeURIComponent(poster||"");
-    },2200);
+    }, 2500);
   }
 </script>
 
