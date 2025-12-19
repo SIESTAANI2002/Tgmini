@@ -13,12 +13,14 @@
       --bg:#000000;
       --card:#020617;
       --text:#e5e7eb;
+      --border:rgba(255,255,255,.18);
     }
 
     body.light{
       --bg:#f8fafc;
       --card:#ffffff;
       --text:#020617;
+      --border:rgba(0,0,0,.18);
     }
 
     body{
@@ -38,44 +40,43 @@
       position:relative;
       padding-bottom:10px;
       margin-bottom:14px;
-      border-bottom:1px solid rgba(255,255,255,.12);
-    }
-    body.light .header{
-      border-bottom:1px solid rgba(0,0,0,.12);
+      border-bottom:1px solid var(--border);
     }
 
-    .menu-btn{position:absolute;left:0;font-size:22px;cursor:pointer}
-    .theme-btn{position:absolute;right:0;font-size:20px;cursor:pointer}
+    .menu-btn{
+      position:absolute;
+      left:0;
+      font-size:22px;
+      cursor:pointer;
+    }
+
+    .theme-btn{
+      position:absolute;
+      right:0;
+      font-size:20px;
+      cursor:pointer;
+    }
+
     .logo{height:36px}
 
-    /* ===== SEARCH (FIXED VISIBILITY) ===== */
+    /* ===== SEARCH ===== */
     .search{
       display:flex;
       margin-bottom:14px;
-      border-radius:12px;
+      border:1px solid var(--border);   /* ✅ visible border */
+      border-radius:10px;
       overflow:hidden;
-      border:1px solid rgba(255,255,255,.18);        /* ✅ border */
-      box-shadow:0 4px 14px rgba(0,0,0,.45);         /* ✅ shadow */
-    }
-
-    body.light .search{
-      border:1px solid rgba(0,0,0,.15);
-      box-shadow:0 6px 16px rgba(0,0,0,.12);
+      background:var(--card);
     }
 
     .search input{
       flex:1;
-      padding:11px 14px;
+      padding:10px 12px;
       border:none;
       outline:none;
-      background:var(--card);
+      background:transparent;
       color:var(--text);
       font-weight:600;
-      font-size:14px;
-    }
-
-    .search input::placeholder{
-      opacity:.7;
     }
 
     .search button{
@@ -87,53 +88,6 @@
       cursor:pointer;
     }
 
-    /* ===== OVERLAY ===== */
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.45);
-      backdrop-filter:blur(6px);
-      opacity:0;
-      pointer-events:none;
-      transition:.3s;
-      z-index:900;
-    }
-    .overlay.show{opacity:1;pointer-events:auto}
-
-    /* ===== SIDEBAR ===== */
-    .sidebar{
-      position:fixed;
-      top:0;
-      left:-260px;
-      width:220px;
-      height:100%;
-      background:var(--card);
-      padding:18px;
-      transition:.3s;
-      z-index:1000;
-    }
-    .sidebar.show{transform:translateX(260px)}
-
-    .side-btn{
-      display:block;
-      padding:12px;
-      margin-bottom:10px;
-      border-radius:10px;
-      background:var(--card);
-      color:var(--text);
-      text-decoration:none;
-      font-weight:700;
-      border:1px solid #1e293b;
-    }
-
-    .social{
-      display:flex;
-      justify-content:center;
-      gap:16px;
-      margin-top:20px;
-    }
-    .social img{width:32px;height:32px}
-
     /* ===== CARD ===== */
     .border-wrap{
       padding:3px;
@@ -141,10 +95,6 @@
       background:linear-gradient(270deg,var(--accent),#000,var(--accent-dark));
       background-size:400% 400%;
       animation:borderGlow 6s ease infinite;
-    }
-
-    body.light .border-wrap{
-      background:linear-gradient(270deg,var(--accent),#fff,var(--accent-dark));
     }
 
     @keyframes borderGlow{
@@ -160,25 +110,22 @@
       box-shadow:0 0 22px rgba(0,0,0,.7);
     }
 
-    body.light .card{
-      box-shadow:0 10px 28px rgba(0,0,0,.12),
-                 inset 0 0 0 1px rgba(0,0,0,.08);
+    .poster{
+      width:100%;
+      height:180px;
+      object-fit:cover;
     }
 
-    .poster{width:100%;height:180px;object-fit:cover}
     .content{padding:14px}
 
     .title{font-size:20px;font-weight:800;margin-bottom:10px}
-    body.light .title{color:#020617}
 
     .meta span{
       display:block;
       font-size:14px;
       font-weight:600;
       line-height:1.7;
-      opacity:.95;
     }
-    body.light .meta span{color:#020617}
 
     .play-btn{
       margin-top:18px;
@@ -203,9 +150,9 @@
       inset:0;
       background:rgba(2,6,23,.85);
       display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
-      flex-direction:column;
       z-index:2000;
       opacity:0;
       pointer-events:none;
@@ -214,7 +161,8 @@
     .loader.show{opacity:1;pointer-events:auto}
 
     .spinner{
-      width:50px;height:50px;
+      width:50px;
+      height:50px;
       border:5px solid #1e293b;
       border-top-color:var(--accent);
       border-radius:50%;
@@ -227,16 +175,94 @@
 
 <body>
 
-<!-- Sidebar / Overlay / Loader / Header / Search / Card -->
-<!-- (UNCHANGED LOGIC BELOW) -->
+<div id="loader" class="loader">
+  <div class="spinner"></div>
+  <p>Preparing stream...</p>
+</div>
+
+<div class="header">
+  <div class="menu-btn">☰</div>
+  <img id="logo" class="logo">
+  <div class="theme-btn" onclick="toggleTheme()">🌗</div>
+</div>
+
+<div class="search">
+  <input id="searchBox" placeholder="Search anime...">
+  <button onclick="search()">🔍</button>
+</div>
+
+<div class="border-wrap">
+  <div class="card">
+    <img id="poster" class="poster">
+    <div class="content">
+      <div class="title" id="anime">㊂ Anime</div>
+      <div class="meta">
+        <span id="episode">⊙ Episode: --</span>
+        <span>⊙ Audio: Japanese</span>
+        <span>⊙ Subtitle: English</span>
+        <span>⊙ Codec: HEVC</span>
+        <span id="resolution">⊙ Resolution: --</span>
+        <span>⊙ Source: AnimeToki.com</span>
+      </div>
+      <button class="play-btn" onclick="go()">▶️ Watch</button>
+    </div>
+  </div>
+</div>
 
 <script>
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
+  /* ===== RANDOM COLOR EACH OPEN ===== */
   function r(){return Math.floor(Math.random()*200)+40}
   document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
   document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
+
+  if(tg.colorScheme==="light") document.body.classList.add("light");
+
+  function toggleTheme(){
+    document.body.classList.toggle("light");
+    setLogo();
+  }
+
+  function setLogo(){
+    const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
+    const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
+    document.getElementById("logo").src =
+      document.body.classList.contains("light") ? light : dark;
+  }
+  setLogo();
+
+  function search(){
+    const q=document.getElementById("searchBox").value.trim();
+    if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
+  }
+
+  /* ===== SAFE PAYLOAD HANDLING (NO BLACK SCREEN) ===== */
+  let anime="Anime", episode="--", driveId="", qual="--", poster="";
+
+  const raw = tg.initDataUnsafe?.start_param;
+  if(raw){
+    try{
+      const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
+      [anime,episode,driveId,qual,poster] = decoded.split("|");
+    }catch(e){
+      console.log("Payload decode failed");
+    }
+  }
+
+  document.getElementById("anime").innerText="㊂ "+anime;
+  document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
+  document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
+  document.getElementById("poster").src =
+    poster || "https://i.imgur.com/8RKXAIV.jpg";
+
+  function go(){
+    loader.classList.add("show");
+    setTimeout(()=>{
+      location.href="player.html?id="+driveId;
+    },2500);
+  }
 </script>
 
 </body>
