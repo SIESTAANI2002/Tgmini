@@ -61,19 +61,26 @@
 
     .logo{height:36px}
 
-    /* ===== SEARCH ===== */
+    /* ===== SEARCH (FIXED VISIBILITY) ===== */
     .search{
       display:flex;
       margin-bottom:14px;
+      border-radius:12px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.18);   /* ✅ ADDED */
+      background:var(--card);
+    }
+
+    body.light .search{
+      border:1px solid rgba(0,0,0,.18);         /* ✅ LIGHT MODE */
     }
 
     .search input{
       flex:1;
       padding:10px 12px;
-      border-radius:10px 0 0 10px;
       border:none;
       outline:none;
-      background:var(--card);
+      background:transparent;
       color:var(--text);
       font-weight:600;
     }
@@ -81,7 +88,6 @@
     .search button{
       padding:0 14px;
       border:none;
-      border-radius:0 10px 10px 0;
       background:var(--accent);
       color:white;
       font-size:18px;
@@ -181,21 +187,12 @@
       margin-bottom:10px;
     }
 
-    body.light .title{
-      color:#020617;
-    }
-
     .meta span{
       display:block;
       font-size:14px;
       font-weight:600;
       line-height:1.7;
       opacity:.95;
-    }
-
-    body.light .meta span{
-      color:#020617;
-      opacity:.9;
     }
 
     .play-btn{
