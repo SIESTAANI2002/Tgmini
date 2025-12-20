@@ -5,12 +5,12 @@
   <title>AnimeToki</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <script src='https://libtl.com/sdk.js' data-zone='10350993' data-sdk='show_10350993'></script>
+  <script src='//libtl.com/sdk.js' data-zone='10350993' data-sdk='show_10350993' data-cfasync="false"></script>
+
   <style>
     :root{
       --accent:#3b82f6;
       --accent-dark:#020617;
-
       --bg:#000000;
       --card:#020617;
       --text:#e5e7eb;
@@ -187,7 +187,7 @@
     .loader{
       position:fixed;
       inset:0;
-      background:rgba(2,6,23,.95); /* Slightly darker for ads */
+      background:rgba(2,6,23,.95);
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -287,9 +287,9 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
-  // Global variable to store Drive ID
   let globalDriveId = "";
 
+  // Styling Functions
   function r(){return Math.floor(Math.random()*200)+40}
   document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
   document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
@@ -317,63 +317,86 @@
     if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
   }
 
-  // Parse Start Parameters
+  // Parse Parameters
   try {
     const startParam = tg.initDataUnsafe.start_param || "";
     if(startParam){
       const decoded=atob(startParam.replace(/-/g,'+').replace(/_/g,'/'));
       const parts=decoded.split("|");
 
-      const anime = parts[0] || "Unknown";
-      const episode = parts[1] || "--";
-      globalDriveId = parts[2] || ""; // Store ID globally
-      const qual = parts[3] || "HD";
-      const poster = parts[4] || "";
-
-      document.getElementById("anime").innerText="㊂ "+anime;
-      document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
-      document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
-      document.getElementById("poster").src=poster;
+      document.getElementById("anime").innerText="㊂ "+(parts[0]||"Unknown");
+      document.getElementById("episode").innerText="⊙ Episode: "+(parts[1]||"--").replace("Episode ","");
+      globalDriveId = parts[2] || ""; 
+      document.getElementById("resolution").innerText="⊙ Resolution: "+(parts[3]||"HD");
+      document.getElementById("poster").src=parts[4]||"";
     }
   } catch(e) {
-    console.log("Param parsing error:", e);
+    console.log("Param Error", e);
   }
 
-  // ✅ MONETAG INTEGRATION LOGIC
+  // ===============================================
+  // ✅ FINAL AD LOGIC (Robust & Safe)
+  // ===============================================
+
   function go(){
-    // Show loader
+    // ১. ভিডিও লিংক চেক করা
+    if(!globalDriveId){
+        alert("Video Link Not Found!");
+        return;
+    }
+
     const loader = document.getElementById("loader");
     const loaderText = document.querySelector(".loader p");
-    loader.classList.add("show");
     
-    // Function to start video
+    // লোডার চালু
+    loader.classList.add("show");
+    loaderText.innerText = "Processing..."; 
+
+    // ফ্ল্যাগ যাতে দুইবার ভিডিও না চলে
+    let adProcessed = false;
+
+    // ভিডিও পেজে নিয়ে যাওয়ার ফাংশন
     const startVideo = () => {
-        if(globalDriveId){
-            // Redirect to player
-            location.href = "player.html?id=" + globalDriveId;
-        } else {
-            alert("Video Link Not Found!");
-            loader.classList.remove("show");
-        }
+        if(adProcessed) return; // কাজ হয়ে গেলে থামো
+        adProcessed = true;
+        
+        // লোডার বন্ধ করে ভিডিও পেজে যাও
+        loader.classList.remove("show");
+        location.href = "player.html?id=" + globalDriveId;
     };
 
-    // Check if Monetag function is loaded
-    if (typeof show_10350993 === 'function') {
-        loaderText.innerText = "Loading Ad...";
-        
-        show_10350993().then(() => {
-            // Ad watched or closed successfully
-            console.log("Ad finished");
+    // ২. সেফটি টাইমার (২.৫ সেকেন্ড)
+    // যদি ২.৫ সেকেন্ডের মধ্যে অ্যাড লোড না হয়, তবে বাদ দিয়ে ভিডিও চলবে
+    const timer = setTimeout(() => {
+        console.log("Ad timeout: Skipping to video...");
+        startVideo();
+    }, 2500);
+
+    // ৩. অ্যাড দেখানোর চেষ্টা
+    try {
+        if (typeof show_10350993 === 'function') {
+            show_10350993().then(() => {
+                // অ্যাড দেখা সাকসেসফুল
+                console.log("Ad Success");
+                clearTimeout(timer); // টাইমার থামাও
+                startVideo(); // ভিডিও চালাও
+            }).catch((e) => {
+                // অ্যাড লোড ফেইল বা নো-ফিল
+                console.error("Ad Failed/No Fill:", e);
+                clearTimeout(timer);
+                startVideo();
+            });
+        } else {
+            // স্ক্রিপ্ট লোড হয়নি (AdBlock বা Network)
+            console.log("Ad script not ready");
+            clearTimeout(timer);
             startVideo();
-        }).catch(e => {
-            // If ad fails to load, skip to video
-            console.error("Ad failed:", e);
-            startVideo();
-        });
-    } else {
-        // Fallback: If ad script blocked or not loaded
-        console.log("Ad script not ready, skipping...");
-        setTimeout(startVideo, 2500);
+        }
+    } catch (err) {
+        // অন্য কোনো এরর
+        console.error("Unknown Error:", err);
+        clearTimeout(timer);
+        startVideo();
     }
   }
 </script>
