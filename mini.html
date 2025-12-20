@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Monetag SDK (Rewarded Interstitial – Manual) -->
+  <!-- Monetag SDK -->
   <script src='//libtl.com/sdk.js' data-zone='10350993' data-sdk='show_10350993'></script>
 
   <meta charset="utf-8">
@@ -285,33 +285,17 @@
   document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
   document.getElementById("poster").src=poster;
 
-  /* ✅ FINAL FIXED go() — loader stuck never happens */
   function go(){
     loader.classList.add("show");
 
-    let redirected = false;
-    function proceed(){
-      if(redirected) return;
-      redirected = true;
-      location.href = "player.html?id=" + driveId;
+    // ✅ Monetag MANUAL trigger (Telegram Mini App compatible)
+    if(typeof show_10350993 === "function"){
+      show_10350993();
     }
 
-    if (typeof show_10350993 === "function") {
-      try{
-        show_10350993()
-          .then(() => { proceed(); })
-          .catch(() => { proceed(); });
-      }catch(e){
-        proceed();
-      }
-    } else {
-      proceed();
-    }
-
-    // 🔒 Failsafe: ad না এলেও 4s পরে redirect হবেই
-    setTimeout(() => {
-      proceed();
-    }, 4000);
+    setTimeout(()=>{
+      location.href="player.html?id="+driveId;
+    },3000);
   }
 </script>
 
