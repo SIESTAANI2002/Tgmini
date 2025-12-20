@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>AnimeToki</title>
 
-  <!-- ✅ Monetag SDK (Rewarded Interstitial – Manual) -->
+  <!-- ✅ Monetag SDK (Rewarded Interstitial) -->
   <script src="https://libtl.com/sdk.js"></script>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -31,53 +31,98 @@
       transition:.3s;
     }
     .header{
-      display:flex;align-items:center;justify-content:center;
-      position:relative;padding-bottom:10px;margin-bottom:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      padding-bottom:10px;
+      margin-bottom:14px;
       border-bottom:1px solid rgba(255,255,255,.12);
     }
-    body.light .header{border-bottom:1px solid rgba(0,0,0,.12)}
+    body.light .header{
+      border-bottom:1px solid rgba(0,0,0,.12);
+    }
     .menu-btn{position:absolute;left:0;font-size:22px;cursor:pointer}
     .theme-btn{position:absolute;right:0;font-size:20px;cursor:pointer}
     .logo{height:36px}
 
     .search{
-      display:flex;margin-bottom:14px;
+      display:flex;
+      margin-bottom:14px;
       border:1px solid rgba(255,255,255,.12);
-      border-radius:12px;overflow:hidden;
+      border-radius:12px;
+      overflow:hidden;
     }
     body.light .search{border:1px solid rgba(0,0,0,.15)}
     .search input{
-      flex:1;padding:10px 12px;border:none;outline:none;
-      background:var(--card);color:var(--text);font-weight:600;
+      flex:1;
+      padding:10px 12px;
+      border:none;
+      outline:none;
+      background:var(--card);
+      color:var(--text);
+      font-weight:600;
     }
     .search button{
-      padding:0 14px;border:none;background:var(--accent);
-      color:white;font-size:18px;cursor:pointer;
+      padding:0 14px;
+      border:none;
+      background:var(--accent);
+      color:white;
+      font-size:18px;
+      cursor:pointer;
     }
 
     .overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.45);
-      backdrop-filter:blur(6px);opacity:0;pointer-events:none;
-      transition:.3s;z-index:900;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.45);
+      backdrop-filter:blur(6px);
+      opacity:0;
+      pointer-events:none;
+      transition:.3s;
+      z-index:900;
     }
     .overlay.show{opacity:1;pointer-events:auto}
 
     .sidebar{
-      position:fixed;top:0;left:-260px;width:220px;height:100%;
-      background:var(--card);padding:18px;transition:.3s;z-index:1000;
+      position:fixed;
+      top:0;
+      left:-260px;
+      width:220px;
+      height:100%;
+      background:var(--card);
+      padding:18px;
+      transition:.3s;
+      z-index:1000;
     }
     .sidebar.show{transform:translateX(260px)}
 
     .side-btn{
-      display:block;padding:12px;margin-bottom:10px;border-radius:10px;
-      background:var(--card);color:var(--text);text-decoration:none;
-      font-weight:700;border:1px solid #1e293b;cursor:pointer;
+      display:block;
+      padding:12px;
+      margin-bottom:10px;
+      border-radius:10px;
+      background:var(--card);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:700;
+      border:1px solid #1e293b;
     }
 
+    .social{
+      display:flex;
+      justify-content:center;
+      gap:16px;
+      margin-top:20px;
+    }
+    .social img{width:32px;height:32px}
+
     .border-wrap{
-      padding:3px;border-radius:18px;
+      padding:3px;
+      border-radius:18px;
       background:linear-gradient(270deg,var(--accent),#000,var(--accent-dark));
-      background-size:400% 400%;animation:borderGlow 6s ease infinite;
+      background-size:400% 400%;
+      animation:borderGlow 6s ease infinite;
     }
     @keyframes borderGlow{
       0%{background-position:0% 50%}
@@ -86,38 +131,67 @@
     }
 
     .card{
-      background:var(--card);border-radius:15px;overflow:hidden;
+      background:var(--card);
+      border-radius:15px;
+      overflow:hidden;
       box-shadow:0 0 22px rgba(0,0,0,.7);
     }
-    .poster{width:100%;height:180px;object-fit:cover}
+
+    .poster{
+      width:100%;
+      height:180px;
+      object-fit:cover;
+    }
 
     .content{padding:14px}
     .title{font-size:20px;font-weight:800;margin-bottom:10px}
-    .meta span{display:block;font-size:14px;font-weight:600;line-height:1.7}
+    .meta span{
+      display:block;
+      font-size:14px;
+      font-weight:600;
+      line-height:1.7;
+    }
 
     .play-btn{
-      margin-top:18px;width:100%;padding:12px;border:none;
-      border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;
-      color:white;display:flex;align-items:center;justify-content:center;
-      gap:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+      margin-top:18px;
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
     }
 
     .loader{
-      position:fixed;inset:0;background:rgba(2,6,23,.85);
-      display:flex;flex-direction:column;align-items:center;
-      justify-content:center;z-index:2000;opacity:0;
-      pointer-events:none;transition:.3s;
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.85);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      z-index:2000;
+      opacity:0;
+      pointer-events:none;
+      transition:.3s;
     }
     .loader.show{opacity:1;pointer-events:auto}
-    body.light .loader{background:rgba(255,255,255,.92)}
 
     .spinner{
-      width:50px;height:50px;border:5px solid #1e293b;
-      border-top-color:var(--accent);border-radius:50%;
-      animation:spin 1s linear infinite;margin-bottom:14px;
-    }
-    body.light .spinner{
-      border:5px solid #cbd5f5;border-top-color:var(--accent);
+      width:50px;
+      height:50px;
+      border:5px solid #1e293b;
+      border-top-color:var(--accent);
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin-bottom:14px;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
   </style>
@@ -125,10 +199,20 @@
 
 <body>
 
+<!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
-  <div class="side-btn" onclick="openWithAd('https://animetoki.com')">All Anime</div>
-  <div class="side-btn" onclick="openWithAd('https://t.me/AnimeChannelSakura')">Main Channel</div>
-  <div class="side-btn" onclick="openWithAd('https://t.me/anime_toki')">Ongoing Anime</div>
+  <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
+  <a class="side-btn" href="#" onclick="Telegram.WebApp.openTelegramLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
+  <a class="side-btn" href="#" onclick="Telegram.WebApp.openTelegramLink('https://t.me/anime_toki')">Ongoing Anime</a>
+
+  <div class="social">
+    <a href="https://www.facebook.com/profile.php?id=61580271211687" target="_blank">
+      <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png">
+    </a>
+    <a href="https://t.me/Ani_Animesh" target="_blank">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+    </a>
+  </div>
 </div>
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
@@ -162,7 +246,6 @@
         <span id="resolution">⊙ Resolution: --</span>
         <span>⊙ Source: AnimeToki.com</span>
       </div>
-      <!-- ▶️ Watch -->
       <button class="play-btn" onclick="go()">▶️ Watch</button>
     </div>
   </div>
@@ -172,20 +255,18 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
-  function r(){return Math.floor(Math.random()*200)+40}
-  document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
-  document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
-
   if(tg.colorScheme==="light") document.body.classList.add("light");
 
   function toggleTheme(){
     document.body.classList.toggle("light");
     setLogo();
   }
+
   function setLogo(){
     const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
     const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
-    logo.src=document.body.classList.contains("light")?light:dark;
+    document.getElementById("logo").src =
+      document.body.classList.contains("light") ? light : dark;
   }
   setLogo();
 
@@ -194,22 +275,27 @@
 
   function search(){
     const q=searchBox.value.trim();
-    if(!q) return;
-    openWithAd("https://animetoki.com/?s="+encodeURIComponent(q));
+    if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
   }
 
   const decoded=atob(tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime,episode,driveId,qual,poster]=decoded.split("|");
 
-  animeEl.textContent="㊂ "+anime;
-  episodeEl.textContent="⊙ Episode: "+episode.replace("Episode ","");
-  resolution.textContent="⊙ Resolution: "+qual;
-  poster.src=poster;
+  document.getElementById("anime").innerText="㊂ "+anime;
+  document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
+  document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
+  document.getElementById("poster").src=poster;
 
-  // 🔥 CORE: Rewarded Interstitial wrapper (ALL buttons)
-  function showAdThen(cb){
+  // ✅ ONLY CHANGE: ad + redirect wrapper
+  function go(){
+    loader.classList.add("show");
+
     let done=false;
-    function next(){ if(done) return; done=true; cb(); }
+    function next(){
+      if(done) return;
+      done=true;
+      location.href="player.html?id="+driveId;
+    }
 
     if(typeof show_10350993==="function"){
       try{
@@ -218,17 +304,8 @@
     }else{
       next();
     }
-    setTimeout(next, 4000); // failsafe
-  }
 
-  function go(){
-    loader.classList.add("show");
-    showAdThen(()=>location.href="player.html?id="+driveId);
-  }
-
-  function openWithAd(url){
-    loader.classList.add("show");
-    showAdThen(()=>Telegram.WebApp.openLink(url));
+    setTimeout(next,4000);
   }
 </script>
 
