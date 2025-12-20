@@ -3,25 +3,26 @@
 <head>
   <meta charset="utf-8">
   <title>AnimeToki</title>
-
-  <!-- ✅ Monetag SDK (Rewarded Interstitial) -->
-  <script src='//libtl.com/sdk.js' data-zone='10350993' data-sdk='show_10350993'></script>
-
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <script src='//libtl.com/sdk.js' data-zone='10350993' data-sdk='show_10350993'></script>
 
   <style>
     :root{
       --accent:#3b82f6;
       --accent-dark:#020617;
+
       --bg:#000000;
       --card:#020617;
       --text:#e5e7eb;
     }
+
     body.light{
       --bg:#f8fafc;
       --card:#ffffff;
       --text:#020617;
     }
+
     body{
       background:var(--bg);
       color:var(--text);
@@ -30,6 +31,8 @@
       margin:0;
       transition:.3s;
     }
+
+    /* ===== HEADER ===== */
     .header{
       display:flex;
       align-items:center;
@@ -42,10 +45,12 @@
     body.light .header{
       border-bottom:1px solid rgba(0,0,0,.12);
     }
+
     .menu-btn{position:absolute;left:0;font-size:22px;cursor:pointer}
     .theme-btn{position:absolute;right:0;font-size:20px;cursor:pointer}
     .logo{height:36px}
 
+    /* ===== SEARCH ===== */
     .search{
       display:flex;
       margin-bottom:14px;
@@ -53,7 +58,9 @@
       border-radius:12px;
       overflow:hidden;
     }
-    body.light .search{border:1px solid rgba(0,0,0,.15)}
+    body.light .search{
+      border:1px solid rgba(0,0,0,.15);
+    }
     .search input{
       flex:1;
       padding:10px 12px;
@@ -72,6 +79,7 @@
       cursor:pointer;
     }
 
+    /* ===== OVERLAY ===== */
     .overlay{
       position:fixed;
       inset:0;
@@ -84,6 +92,7 @@
     }
     .overlay.show{opacity:1;pointer-events:auto}
 
+    /* ===== SIDEBAR ===== */
     .sidebar{
       position:fixed;
       top:0;
@@ -117,6 +126,7 @@
     }
     .social img{width:32px;height:32px}
 
+    /* ===== CARD ===== */
     .border-wrap{
       padding:3px;
       border-radius:18px;
@@ -124,6 +134,10 @@
       background-size:400% 400%;
       animation:borderGlow 6s ease infinite;
     }
+    body.light .border-wrap{
+      background:linear-gradient(270deg,var(--accent),#fff,var(--accent-dark));
+    }
+
     @keyframes borderGlow{
       0%{background-position:0% 50%}
       50%{background-position:100% 50%}
@@ -145,6 +159,7 @@
 
     .content{padding:14px}
     .title{font-size:20px;font-weight:800;margin-bottom:10px}
+
     .meta span{
       display:block;
       font-size:14px;
@@ -169,10 +184,11 @@
       background:linear-gradient(135deg,var(--accent),var(--accent-dark));
     }
 
+    /* ===== LOADER ===== */
     .loader{
       position:fixed;
       inset:0;
-      background:rgba(2,6,23,.85);
+      background:rgba(2,6,23,.95); /* Slightly darker for ads */
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -184,6 +200,10 @@
     }
     .loader.show{opacity:1;pointer-events:auto}
 
+    body.light .loader{
+      background:rgba(255,255,255,.95);
+    }
+
     .spinner{
       width:50px;
       height:50px;
@@ -193,17 +213,30 @@
       animation:spin 1s linear infinite;
       margin-bottom:14px;
     }
+
+    body.light .spinner{
+      border:5px solid #cbd5f5;
+      border-top-color:var(--accent);
+    }
+
     @keyframes spin{to{transform:rotate(360deg)}}
+
+    .loader p{
+      font-weight:700;
+      color:#e5e7eb;
+    }
+    body.light .loader p{
+      color:#020617;
+    }
   </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
   <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
-  <a class="side-btn" href="#" onclick="Telegram.WebApp.openTelegramLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
-  <a class="side-btn" href="#" onclick="Telegram.WebApp.openTelegramLink('https://t.me/anime_toki')">Ongoing Anime</a>
+  <a class="side-btn" href="https://t.me/AnimeChannelSakura" onclick="Telegram.WebApp.openTelegramLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
+  <a class="side-btn" href="https://t.me/anime_toki" onclick="Telegram.WebApp.openTelegramLink('https://t.me/anime_toki')">Ongoing Anime</a>
 
   <div class="social">
     <a href="https://www.facebook.com/profile.php?id=61580271211687" target="_blank">
@@ -219,7 +252,7 @@
 
 <div id="loader" class="loader">
   <div class="spinner"></div>
-  <p>Preparing stream...</p>
+  <p>Loading...</p>
 </div>
 
 <div class="header">
@@ -255,6 +288,13 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
+  // Global variable to store Drive ID
+  let globalDriveId = "";
+
+  function r(){return Math.floor(Math.random()*200)+40}
+  document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
+  document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
+
   if(tg.colorScheme==="light") document.body.classList.add("light");
 
   function toggleTheme(){
@@ -274,38 +314,68 @@
   function closeMenu(){sidebar.classList.remove("show");overlay.classList.remove("show")}
 
   function search(){
-    const q=searchBox.value.trim();
+    const q=document.getElementById("searchBox").value.trim();
     if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
   }
 
-  const decoded=atob(tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/'));
-  const [anime,episode,driveId,qual,poster]=decoded.split("|");
+  // Parse Start Parameters
+  try {
+    const startParam = tg.initDataUnsafe.start_param || "";
+    if(startParam){
+      const decoded=atob(startParam.replace(/-/g,'+').replace(/_/g,'/'));
+      const parts=decoded.split("|");
 
-  document.getElementById("anime").innerText="㊂ "+anime;
-  document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
-  document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
-  document.getElementById("poster").src=poster;
+      const anime = parts[0] || "Unknown";
+      const episode = parts[1] || "--";
+      globalDriveId = parts[2] || ""; // Store ID globally
+      const qual = parts[3] || "HD";
+      const poster = parts[4] || "";
 
-  // ✅ ONLY CHANGE: ad + redirect wrapper
+      document.getElementById("anime").innerText="㊂ "+anime;
+      document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
+      document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
+      document.getElementById("poster").src=poster;
+    }
+  } catch(e) {
+    console.log("Param parsing error:", e);
+  }
+
+  // ✅ MONETAG INTEGRATION LOGIC
   function go(){
+    // Show loader
+    const loader = document.getElementById("loader");
+    const loaderText = document.querySelector(".loader p");
     loader.classList.add("show");
+    
+    // Function to start video
+    const startVideo = () => {
+        if(globalDriveId){
+            // Redirect to player
+            location.href = "player.html?id=" + globalDriveId;
+        } else {
+            alert("Video Link Not Found!");
+            loader.classList.remove("show");
+        }
+    };
 
-    let done=false;
-    function next(){
-      if(done) return;
-      done=true;
-      location.href="player.html?id="+driveId;
+    // Check if Monetag function is loaded
+    if (typeof show_10350993 === 'function') {
+        loaderText.innerText = "Loading Ad...";
+        
+        show_10350993().then(() => {
+            // Ad watched or closed successfully
+            console.log("Ad finished");
+            startVideo();
+        }).catch(e => {
+            // If ad fails to load, skip to video
+            console.error("Ad failed:", e);
+            startVideo();
+        });
+    } else {
+        // Fallback: If ad script blocked or not loaded
+        console.log("Ad script not ready, skipping...");
+        setTimeout(startVideo, 2500);
     }
-
-    if(typeof show_10350993==="function"){
-      try{
-        show_10350993().then(next).catch(next);
-      }catch(e){ next(); }
-    }else{
-      next();
-    }
-
-    setTimeout(next,4000);
   }
 </script>
 
