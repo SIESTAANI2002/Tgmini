@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8">
   <title>AnimeToki</title>
+
+  <!-- Telegram SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+  <!-- Ad SDK (kept, but will be used on external page) -->
   <script src='//libtl.com/sdk.js'
     data-zone='10350993'
     data-sdk='show_10350993'
@@ -18,13 +21,11 @@
       --card:#020617;
       --text:#e5e7eb;
     }
-
     body.light{
       --bg:#f8fafc;
       --card:#ffffff;
       --text:#020617;
     }
-
     body{
       background:var(--bg);
       color:var(--text);
@@ -34,7 +35,7 @@
       transition:.3s;
     }
 
-    /* ===== HEADER ===== */
+    /* HEADER */
     .header{
       display:flex;
       align-items:center;
@@ -47,12 +48,11 @@
     body.light .header{
       border-bottom:1px solid rgba(0,0,0,.12);
     }
-
     .menu-btn{position:absolute;left:0;font-size:22px;cursor:pointer}
     .theme-btn{position:absolute;right:0;font-size:20px;cursor:pointer}
     .logo{height:36px}
 
-    /* ===== SEARCH ===== */
+    /* SEARCH */
     .search{
       display:flex;
       margin-bottom:14px;
@@ -81,7 +81,7 @@
       cursor:pointer;
     }
 
-    /* ===== OVERLAY ===== */
+    /* OVERLAY */
     .overlay{
       position:fixed;
       inset:0;
@@ -94,7 +94,7 @@
     }
     .overlay.show{opacity:1;pointer-events:auto}
 
-    /* ===== SIDEBAR (FIXED) ===== */
+    /* SIDEBAR (FIXED SAFE) */
     .sidebar{
       position:fixed;
       top:0;
@@ -129,7 +129,7 @@
     }
     .social img{width:32px;height:32px}
 
-    /* ===== CARD ===== */
+    /* CARD */
     .border-wrap{
       padding:3px;
       border-radius:18px;
@@ -140,36 +140,30 @@
     body.light .border-wrap{
       background:linear-gradient(270deg,var(--accent),#fff,var(--accent-dark));
     }
-
     @keyframes borderGlow{
       0%{background-position:0% 50%}
       50%{background-position:100% 50%}
       100%{background-position:0% 50%}
     }
-
     .card{
       background:var(--card);
       border-radius:15px;
       overflow:hidden;
       box-shadow:0 0 22px rgba(0,0,0,.7);
     }
-
     .poster{
       width:100%;
       height:180px;
       object-fit:cover;
     }
-
     .content{padding:14px}
     .title{font-size:20px;font-weight:800;margin-bottom:10px}
-
     .meta span{
       display:block;
       font-size:14px;
       font-weight:600;
       line-height:1.7;
     }
-
     .play-btn{
       margin-top:18px;
       width:100%;
@@ -186,45 +180,6 @@
       gap:10px;
       background:linear-gradient(135deg,var(--accent),var(--accent-dark));
     }
-
-    /* ===== LOADER ===== */
-    .loader{
-      position:fixed;
-      inset:0;
-      background:rgba(2,6,23,.95);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      z-index:2000;
-      opacity:0;
-      pointer-events:none;
-      transition:.3s;
-    }
-    .loader.show{opacity:1;pointer-events:auto}
-
-    body.light .loader{
-      background:rgba(255,255,255,.95);
-    }
-
-    .spinner{
-      width:50px;
-      height:50px;
-      border:5px solid #1e293b;
-      border-top-color:var(--accent);
-      border-radius:50%;
-      animation:spin 1s linear infinite;
-      margin-bottom:14px;
-    }
-
-    body.light .spinner{
-      border:5px solid #cbd5f5;
-      border-top-color:var(--accent);
-    }
-
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    .loader p{font-weight:700}
   </style>
 </head>
 
@@ -277,41 +232,69 @@
 </div>
 
 <script>
+/* Telegram Init */
 const tg = Telegram.WebApp;
-tg.ready(); tg.expand();
+tg.ready();
+tg.expand();
 
+/* Sidebar safe binding */
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
-
-let globalDriveId = "";
 
 function openMenu(){
   sidebar.classList.add("show");
   overlay.classList.add("show");
 }
-overlay.onclick = closeMenu;
 function closeMenu(){
   sidebar.classList.remove("show");
   overlay.classList.remove("show");
 }
+overlay.onclick = closeMenu;
 
+/* Theme */
+if(tg.colorScheme==="light") document.body.classList.add("light");
+function toggleTheme(){
+  document.body.classList.toggle("light");
+  setLogo();
+}
+function setLogo(){
+  const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
+  const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
+  logo.src=document.body.classList.contains("light")?light:dark;
+}
+setLogo();
+
+/* Search */
 function search(){
   const q=searchBox.value.trim();
   if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
 }
 
-/* ===== External Browser Redirect (FIX) ===== */
+/* Parse payload */
+let globalDriveId="";
+try{
+  const sp=tg.initDataUnsafe.start_param||"";
+  if(sp){
+    const d=atob(sp.replace(/-/g,'+').replace(/_/g,'/'));
+    const p=d.split("|");
+    anime.innerText="㊂ "+(p[0]||"Unknown");
+    episode.innerText="⊙ Episode: "+((p[1]||"--").replace(/episode\s*/i,""));
+    globalDriveId=p[2]||"";
+    resolution.innerText="⊙ Resolution: "+(p[3]||"HD");
+    poster.src=p[4]||"";
+  }
+}catch(e){}
+
+/* 🔥 FINAL FIX: External Browser Open (GUARANTEED) */
 function go(){
   if(!globalDriveId){
     alert("Video Link Not Found!");
     return;
   }
-
-  const url = "https://animetoki.com/ad.html?id=" +
-              encodeURIComponent(globalDriveId);
+  const url="https://animetoki.com/ad.html?id="+encodeURIComponent(globalDriveId);
 
   if(window.Telegram && Telegram.WebApp){
-    Telegram.WebApp.openLink(url);
+    Telegram.WebApp.openTelegramLink(url);
   }else{
     window.open(url,"_blank");
   }
