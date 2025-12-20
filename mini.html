@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Monetag SDK (AUTO SHOW REMOVED – SAFE) -->
-  <script src="//libtl.com/sdk.js"></script>
+  <!-- ✅ Monetag SDK (HTTPS + NO AUTO SHOW) -->
+  <script src="https://libtl.com/sdk.js"></script>
 
   <meta charset="utf-8">
   <title>AnimeToki</title>
@@ -16,13 +16,11 @@
       --card:#020617;
       --text:#e5e7eb;
     }
-
     body.light{
       --bg:#f8fafc;
       --card:#ffffff;
       --text:#020617;
     }
-
     body{
       background:var(--bg);
       color:var(--text);
@@ -31,27 +29,19 @@
       margin:0;
       transition:.3s;
     }
-
     .header{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      padding-bottom:10px;
-      margin-bottom:14px;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;padding-bottom:10px;margin-bottom:14px;
       border-bottom:1px solid rgba(255,255,255,.12);
     }
     body.light .header{border-bottom:1px solid rgba(0,0,0,.12)}
     .menu-btn{position:absolute;left:0;font-size:22px;cursor:pointer}
     .theme-btn{position:absolute;right:0;font-size:20px;cursor:pointer}
     .logo{height:36px}
-
     .search{
-      display:flex;
-      margin-bottom:14px;
+      display:flex;margin-bottom:14px;
       border:1px solid rgba(255,255,255,.12);
-      border-radius:12px;
-      overflow:hidden;
+      border-radius:12px;overflow:hidden;
     }
     body.light .search{border:1px solid rgba(0,0,0,.15)}
     .search input{
@@ -62,29 +52,24 @@
       padding:0 14px;border:none;background:var(--accent);
       color:white;font-size:18px;cursor:pointer;
     }
-
     .overlay{
       position:fixed;inset:0;background:rgba(0,0,0,.45);
       backdrop-filter:blur(6px);opacity:0;pointer-events:none;
       transition:.3s;z-index:900;
     }
     .overlay.show{opacity:1;pointer-events:auto}
-
     .sidebar{
       position:fixed;top:0;left:-260px;width:220px;height:100%;
       background:var(--card);padding:18px;transition:.3s;z-index:1000;
     }
     .sidebar.show{transform:translateX(260px)}
-
     .side-btn{
       display:block;padding:12px;margin-bottom:10px;
       border-radius:10px;background:var(--card);color:var(--text);
       text-decoration:none;font-weight:700;border:1px solid #1e293b;
     }
-
     .social{display:flex;justify-content:center;gap:16px;margin-top:20px}
     .social img{width:32px;height:32px}
-
     .border-wrap{
       padding:3px;border-radius:18px;
       background:linear-gradient(270deg,var(--accent),#000,var(--accent-dark));
@@ -98,19 +83,15 @@
       50%{background-position:100% 50%}
       100%{background-position:0% 50%}
     }
-
     .card{
       background:var(--card);border-radius:15px;overflow:hidden;
       box-shadow:0 0 22px rgba(0,0,0,.7);
     }
     .poster{width:100%;height:180px;object-fit:cover}
-
     .content{padding:14px;background:#090b0e}
     body.light .content{background:#ffffff}
-
     .title{font-size:20px;font-weight:800;margin-bottom:10px}
     .meta span{display:block;font-size:14px;font-weight:600;line-height:1.7}
-
     .play-btn{
       margin-top:18px;width:100%;padding:12px;border:none;
       border-radius:12px;font-size:16px;font-weight:800;
@@ -118,7 +99,6 @@
       align-items:center;justify-content:center;gap:10px;
       background:linear-gradient(135deg,var(--accent),var(--accent-dark));
     }
-
     .loader{
       position:fixed;inset:0;background:rgba(2,6,23,.85);
       display:flex;flex-direction:column;align-items:center;
@@ -126,15 +106,12 @@
       pointer-events:none;transition:.3s;
     }
     .loader.show{opacity:1;pointer-events:auto}
-    body.light .loader{background:rgba(255,255,255,.92)}
-
     .spinner{
       width:50px;height:50px;border:5px solid #1e293b;
       border-top-color:var(--accent);border-radius:50%;
       animation:spin 1s linear infinite;margin-bottom:14px;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
-
     .footer{
       margin-top:22px;padding:14px 6px 6px;text-align:center;
       font-size:13px;font-weight:600;opacity:.75;
@@ -149,15 +126,6 @@
   <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
   <a class="side-btn" href="#" onclick="Telegram.WebApp.openTelegramLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
   <a class="side-btn" href="#" onclick="Telegram.WebApp.openTelegramLink('https://t.me/anime_toki')">Ongoing Anime</a>
-
-  <div class="social">
-    <a href="https://www.facebook.com/profile.php?id=61580271211687" target="_blank">
-      <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png">
-    </a>
-    <a href="https://t.me/Ani_Animesh" target="_blank">
-      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
-    </a>
-  </div>
 </div>
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
@@ -204,12 +172,8 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
-  function r(){return Math.floor(Math.random()*200)+40}
-  document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
-  document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
-
-  if(tg.colorScheme==="light") document.body.classList.add("light");
-
+  function openMenu(){sidebar.classList.add("show");overlay.classList.add("show")}
+  function closeMenu(){sidebar.classList.remove("show");overlay.classList.remove("show")}
   function toggleTheme(){document.body.classList.toggle("light");setLogo()}
   function setLogo(){
     const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
@@ -217,9 +181,6 @@
     logo.src=document.body.classList.contains("light")?light:dark;
   }
   setLogo();
-
-  function openMenu(){sidebar.classList.add("show");overlay.classList.add("show")}
-  function closeMenu(){sidebar.classList.remove("show");overlay.classList.remove("show")}
 
   function search(){
     const q=searchBox.value.trim();
@@ -229,7 +190,6 @@
   const decoded=atob(tg.initDataUnsafe.start_param.replace(/-/g,'+').replace(/_/g,'/'));
   const [anime,episode,driveId,qual,poster]=decoded.split("|");
 
-  animeEl=anime; // no logic change
   document.getElementById("anime").innerText="㊂ "+anime;
   document.getElementById("episode").innerText="⊙ Episode: "+episode.replace("Episode ","");
   document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
@@ -238,23 +198,22 @@
   function go(){
     loader.classList.add("show");
 
-    if(sessionStorage.getItem("monetag_shown")!=="1" && typeof show_10350993==="function"){
+    if(typeof show_10350993 === "function"){
       show_10350993({
         type:'inApp',
         inAppSettings:{
           frequency:1,
-          capping:0.2,
-          interval:30,
-          timeout:5,
-          everyPage:false
+          capping:0,
+          interval:0,
+          timeout:0,
+          everyPage:true
         }
       });
-      sessionStorage.setItem("monetag_shown","1");
     }
 
     setTimeout(()=>{
       location.href="player.html?id="+driveId;
-    },3500);
+    },3000);
   }
 </script>
 
