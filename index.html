@@ -5,7 +5,10 @@
   <title>AnimeToki</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <script src='//libtl.com/sdk.js' data-zone='10350993' data-sdk='show_10350993' data-cfasync="false"></script>
+  <script src='//libtl.com/sdk.js'
+    data-zone='10350993'
+    data-sdk='show_10350993'
+    data-cfasync="false"></script>
 
   <style>
     :root{
@@ -91,11 +94,12 @@
     }
     .overlay.show{opacity:1;pointer-events:auto}
 
-    /* ===== SIDEBAR ===== */
+    /* ===== SIDEBAR (FIXED) ===== */
     .sidebar{
       position:fixed;
       top:0;
-      left:-260px;
+      left:0;
+      transform:translateX(-260px);
       width:220px;
       height:100%;
       background:var(--card);
@@ -103,7 +107,7 @@
       transition:.3s;
       z-index:1000;
     }
-    .sidebar.show{transform:translateX(260px)}
+    .sidebar.show{transform:translateX(0)}
 
     .side-btn{
       display:block;
@@ -220,13 +224,7 @@
 
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    .loader p{
-      font-weight:700;
-      color:#e5e7eb;
-    }
-    body.light .loader p{
-      color:#020617;
-    }
+    .loader p{font-weight:700}
   </style>
 </head>
 
@@ -234,8 +232,8 @@
 
 <div id="sidebar" class="sidebar">
   <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
-  <a class="side-btn" href="https://t.me/AnimeChannelSakura" onclick="Telegram.WebApp.openTelegramLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
-  <a class="side-btn" href="https://t.me/anime_toki" onclick="Telegram.WebApp.openTelegramLink('https://t.me/anime_toki')">Ongoing Anime</a>
+  <a class="side-btn" onclick="Telegram.WebApp.openTelegramLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
+  <a class="side-btn" onclick="Telegram.WebApp.openTelegramLink('https://t.me/anime_toki')">Ongoing Anime</a>
 
   <div class="social">
     <a href="https://www.facebook.com/profile.php?id=61580271211687" target="_blank">
@@ -247,12 +245,7 @@
   </div>
 </div>
 
-<div id="overlay" class="overlay" onclick="closeMenu()"></div>
-
-<div id="loader" class="loader">
-  <div class="spinner"></div>
-  <p>Loading...</p>
-</div>
+<div id="overlay" class="overlay"></div>
 
 <div class="header">
   <div class="menu-btn" onclick="openMenu()">☰</div>
@@ -284,121 +277,45 @@
 </div>
 
 <script>
-  const tg = Telegram.WebApp;
-  tg.ready(); tg.expand();
+const tg = Telegram.WebApp;
+tg.ready(); tg.expand();
 
-  let globalDriveId = "";
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
 
-  // Styling Functions
-  function r(){return Math.floor(Math.random()*200)+40}
-  document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
-  document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
+let globalDriveId = "";
 
-  if(tg.colorScheme==="light") document.body.classList.add("light");
+function openMenu(){
+  sidebar.classList.add("show");
+  overlay.classList.add("show");
+}
+overlay.onclick = closeMenu;
+function closeMenu(){
+  sidebar.classList.remove("show");
+  overlay.classList.remove("show");
+}
 
-  function toggleTheme(){
-    document.body.classList.toggle("light");
-    setLogo();
+function search(){
+  const q=searchBox.value.trim();
+  if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
+}
+
+/* ===== External Browser Redirect (FIX) ===== */
+function go(){
+  if(!globalDriveId){
+    alert("Video Link Not Found!");
+    return;
   }
 
-  function setLogo(){
-    const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
-    const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
-    document.getElementById("logo").src =
-      document.body.classList.contains("light") ? light : dark;
+  const url = "https://animetoki.com/ad.html?id=" +
+              encodeURIComponent(globalDriveId);
+
+  if(window.Telegram && Telegram.WebApp){
+    Telegram.WebApp.openLink(url);
+  }else{
+    window.open(url,"_blank");
   }
-  setLogo();
-
-  function openMenu(){sidebar.classList.add("show");overlay.classList.add("show")}
-  function closeMenu(){sidebar.classList.remove("show");overlay.classList.remove("show")}
-
-  function search(){
-    const q=document.getElementById("searchBox").value.trim();
-    if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
-  }
-
-  // Parse Parameters
-  try {
-    const startParam = tg.initDataUnsafe.start_param || "";
-    if(startParam){
-      const decoded=atob(startParam.replace(/-/g,'+').replace(/_/g,'/'));
-      const parts=decoded.split("|");
-
-      document.getElementById("anime").innerText="㊂ "+(parts[0]||"Unknown");
-      document.getElementById("episode").innerText="⊙ Episode: "+(parts[1]||"--").replace("Episode ","");
-      globalDriveId = parts[2] || ""; 
-      document.getElementById("resolution").innerText="⊙ Resolution: "+(parts[3]||"HD");
-      document.getElementById("poster").src=parts[4]||"";
-    }
-  } catch(e) {
-    console.log("Param Error", e);
-  }
-
-  // ===============================================
-  // ✅ FINAL AD LOGIC (Robust & Safe)
-  // ===============================================
-
-  function go(){
-    // ১. ভিডিও লিংক চেক করা
-    if(!globalDriveId){
-        alert("Video Link Not Found!");
-        return;
-    }
-
-    const loader = document.getElementById("loader");
-    const loaderText = document.querySelector(".loader p");
-    
-    // লোডার চালু
-    loader.classList.add("show");
-    loaderText.innerText = "Processing..."; 
-
-    // ফ্ল্যাগ যাতে দুইবার ভিডিও না চলে
-    let adProcessed = false;
-
-    // ভিডিও পেজে নিয়ে যাওয়ার ফাংশন
-    const startVideo = () => {
-        if(adProcessed) return; // কাজ হয়ে গেলে থামো
-        adProcessed = true;
-        
-        // লোডার বন্ধ করে ভিডিও পেজে যাও
-        loader.classList.remove("show");
-        location.href = "player.html?id=" + globalDriveId;
-    };
-
-    // ২. সেফটি টাইমার (২.৫ সেকেন্ড)
-    // যদি ২.৫ সেকেন্ডের মধ্যে অ্যাড লোড না হয়, তবে বাদ দিয়ে ভিডিও চলবে
-    const timer = setTimeout(() => {
-        console.log("Ad timeout: Skipping to video...");
-        startVideo();
-    }, 2500);
-
-    // ৩. অ্যাড দেখানোর চেষ্টা
-    try {
-        if (typeof show_10350993 === 'function') {
-            show_10350993().then(() => {
-                // অ্যাড দেখা সাকসেসফুল
-                console.log("Ad Success");
-                clearTimeout(timer); // টাইমার থামাও
-                startVideo(); // ভিডিও চালাও
-            }).catch((e) => {
-                // অ্যাড লোড ফেইল বা নো-ফিল
-                console.error("Ad Failed/No Fill:", e);
-                clearTimeout(timer);
-                startVideo();
-            });
-        } else {
-            // স্ক্রিপ্ট লোড হয়নি (AdBlock বা Network)
-            console.log("Ad script not ready");
-            clearTimeout(timer);
-            startVideo();
-        }
-    } catch (err) {
-        // অন্য কোনো এরর
-        console.error("Unknown Error:", err);
-        clearTimeout(timer);
-        startVideo();
-    }
-  }
+}
 </script>
 
 </body>
