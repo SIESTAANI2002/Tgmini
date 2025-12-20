@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Monetag SDK -->
-  <script src='//libtl.com/sdk.js' data-zone='10350993' data-sdk='show_10350993'></script>
-  <script>(function(s){s.dataset.zone='10347645',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+  <!-- ✅ Monetag SDK (Rewarded Popup – Manual Trigger) -->
+  <script src="https://libtl.com/sdk.js"></script>
 
   <meta charset="utf-8">
   <title>AnimeToki</title>
@@ -255,16 +254,11 @@
   const tg = Telegram.WebApp;
   tg.ready(); tg.expand();
 
-  function toggleTheme(){
-    document.body.classList.toggle("light");
-    setLogo();
-  }
-
+  function toggleTheme(){document.body.classList.toggle("light");setLogo()}
   function setLogo(){
     const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
     const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
-    document.getElementById("logo").src =
-      document.body.classList.contains("light") ? light : dark;
+    logo.src=document.body.classList.contains("light")?light:dark;
   }
   setLogo();
 
@@ -286,17 +280,33 @@
   document.getElementById("resolution").innerText="⊙ Resolution: "+qual;
   document.getElementById("poster").src=poster;
 
+  /* ✅ Rewarded Popup + Loader-safe */
   function go(){
     loader.classList.add("show");
 
-    // ✅ Monetag MANUAL trigger (Telegram Mini App compatible)
-    if(typeof show_10350993 === "function"){
-      show_10350993();
+    let redirected = false;
+    function proceed(){
+      if(redirected) return;
+      redirected = true;
+      location.href = "player.html?id=" + driveId;
     }
 
-    setTimeout(()=>{
-      location.href="player.html?id="+driveId;
-    },3000);
+    if (typeof show_10350993 === "function") {
+      try{
+        show_10350993()
+          .then(() => { proceed(); })
+          .catch(() => { proceed(); });
+      }catch(e){
+        proceed();
+      }
+    } else {
+      proceed();
+    }
+
+    // Failsafe
+    setTimeout(() => {
+      proceed();
+    }, 4000);
   }
 </script>
 
