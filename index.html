@@ -8,225 +8,48 @@
   <script src='//libtl.com/sdk.js' data-zone='10350993' data-sdk='show_10350993' data-cfasync="false"></script>
 
   <style>
-    :root{
-      --accent:#3b82f6;
-      --accent-dark:#020617;
-      --bg:#000000;
-      --card:#020617;
-      --text:#e5e7eb;
-    }
+    :root{ --accent:#3b82f6; --accent-dark:#020617; --bg:#000000; --card:#020617; --text:#e5e7eb; }
+    body.light{ --bg:#f8fafc; --card:#ffffff; --text:#020617; }
+    body{ background:var(--bg); color:var(--text); font-family:Arial,sans-serif; padding:16px; margin:0; transition:.3s; }
 
-    body.light{
-      --bg:#f8fafc;
-      --card:#ffffff;
-      --text:#020617;
-    }
+    /* HEADER */
+    .header{ display:flex; align-items:center; justify-content:center; position:relative; padding-bottom:10px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,.12); }
+    body.light .header{ border-bottom:1px solid rgba(0,0,0,.12); }
+    .menu-btn{ position:absolute; left:0; font-size:22px; cursor:pointer }
+    .theme-btn{ position:absolute; right:0; font-size:20px; cursor:pointer }
+    .logo{ height:36px }
 
-    body{
-      background:var(--bg);
-      color:var(--text);
-      font-family:Arial,sans-serif;
-      padding:16px;
-      margin:0;
-      transition:.3s;
-    }
+    /* SEARCH */
+    .search{ display:flex; margin-bottom:14px; border:1px solid rgba(255,255,255,.12); border-radius:12px; overflow:hidden; }
+    body.light .search{ border:1px solid rgba(0,0,0,.15); }
+    .search input{ flex:1; padding:10px 12px; border:none; outline:none; background:var(--card); color:var(--text); font-weight:600; }
+    .search button{ padding:0 14px; border:none; background:var(--accent); color:white; font-size:18px; cursor:pointer; }
 
-    /* ===== HEADER ===== */
-    .header{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      padding-bottom:10px;
-      margin-bottom:14px;
-      border-bottom:1px solid rgba(255,255,255,.12);
-    }
-    body.light .header{
-      border-bottom:1px solid rgba(0,0,0,.12);
-    }
+    /* SIDEBAR & OVERLAY */
+    .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter:blur(6px); opacity:0; pointer-events:none; transition:.3s; z-index:900; }
+    .overlay.show{ opacity:1; pointer-events:auto }
+    .sidebar{ position:fixed; top:0; left:-260px; width:220px; height:100%; background:var(--card); padding:18px; transition:.3s; z-index:1000; }
+    .sidebar.show{ transform:translateX(260px) }
+    .side-btn{ display:block; padding:12px; margin-bottom:10px; border-radius:10px; background:var(--card); color:var(--text); text-decoration:none; font-weight:700; border:1px solid #1e293b; }
+    .social{ display:flex; justify-content:center; gap:16px; margin-top:20px; }
+    .social img{ width:32px; height:32px }
 
-    .menu-btn{position:absolute;left:0;font-size:22px;cursor:pointer}
-    .theme-btn{position:absolute;right:0;font-size:20px;cursor:pointer}
-    .logo{height:36px}
+    /* CARD & CONTENT */
+    .border-wrap{ padding:3px; border-radius:18px; background:linear-gradient(270deg,var(--accent),#000,var(--accent-dark)); background-size:400% 400%; animation:borderGlow 6s ease infinite; }
+    body.light .border-wrap{ background:linear-gradient(270deg,var(--accent),#fff,var(--accent-dark)); }
+    @keyframes borderGlow{ 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    
+    .card{ background:var(--card); border-radius:15px; overflow:hidden; box-shadow:0 0 22px rgba(0,0,0,.7); }
+    .poster{ width:100%; height:180px; object-fit:cover; }
+    .content{ padding:14px }
+    .title{ font-size:20px; font-weight:800; margin-bottom:10px }
+    .meta span{ display:block; font-size:14px; font-weight:600; line-height:1.7; }
 
-    /* ===== SEARCH ===== */
-    .search{
-      display:flex;
-      margin-bottom:14px;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:12px;
-      overflow:hidden;
-    }
-    body.light .search{
-      border:1px solid rgba(0,0,0,.15);
-    }
-    .search input{
-      flex:1;
-      padding:10px 12px;
-      border:none;
-      outline:none;
-      background:var(--card);
-      color:var(--text);
-      font-weight:600;
-    }
-    .search button{
-      padding:0 14px;
-      border:none;
-      background:var(--accent);
-      color:white;
-      font-size:18px;
-      cursor:pointer;
-    }
+    /* PLAY BUTTON */
+    .play-btn{ margin-top:18px; width:100%; padding:12px; border:none; border-radius:12px; font-size:16px; font-weight:800; cursor:pointer; color:white; display:flex; align-items:center; justify-content:center; gap:10px; background:linear-gradient(135deg,var(--accent),var(--accent-dark)); transition: 0.2s; }
+    .play-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-    /* ===== OVERLAY ===== */
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.45);
-      backdrop-filter:blur(6px);
-      opacity:0;
-      pointer-events:none;
-      transition:.3s;
-      z-index:900;
-    }
-    .overlay.show{opacity:1;pointer-events:auto}
-
-    /* ===== SIDEBAR ===== */
-    .sidebar{
-      position:fixed;
-      top:0;
-      left:-260px;
-      width:220px;
-      height:100%;
-      background:var(--card);
-      padding:18px;
-      transition:.3s;
-      z-index:1000;
-    }
-    .sidebar.show{transform:translateX(260px)}
-
-    .side-btn{
-      display:block;
-      padding:12px;
-      margin-bottom:10px;
-      border-radius:10px;
-      background:var(--card);
-      color:var(--text);
-      text-decoration:none;
-      font-weight:700;
-      border:1px solid #1e293b;
-    }
-
-    .social{
-      display:flex;
-      justify-content:center;
-      gap:16px;
-      margin-top:20px;
-    }
-    .social img{width:32px;height:32px}
-
-    /* ===== CARD ===== */
-    .border-wrap{
-      padding:3px;
-      border-radius:18px;
-      background:linear-gradient(270deg,var(--accent),#000,var(--accent-dark));
-      background-size:400% 400%;
-      animation:borderGlow 6s ease infinite;
-    }
-    body.light .border-wrap{
-      background:linear-gradient(270deg,var(--accent),#fff,var(--accent-dark));
-    }
-
-    @keyframes borderGlow{
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
-    }
-
-    .card{
-      background:var(--card);
-      border-radius:15px;
-      overflow:hidden;
-      box-shadow:0 0 22px rgba(0,0,0,.7);
-    }
-
-    .poster{
-      width:100%;
-      height:180px;
-      object-fit:cover;
-    }
-
-    .content{padding:14px}
-    .title{font-size:20px;font-weight:800;margin-bottom:10px}
-
-    .meta span{
-      display:block;
-      font-size:14px;
-      font-weight:600;
-      line-height:1.7;
-    }
-
-    .play-btn{
-      margin-top:18px;
-      width:100%;
-      padding:12px;
-      border:none;
-      border-radius:12px;
-      font-size:16px;
-      font-weight:800;
-      cursor:pointer;
-      color:white;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      background:linear-gradient(135deg,var(--accent),var(--accent-dark));
-    }
-
-    /* ===== LOADER ===== */
-    .loader{
-      position:fixed;
-      inset:0;
-      background:rgba(2,6,23,.95);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      z-index:2000;
-      opacity:0;
-      pointer-events:none;
-      transition:.3s;
-    }
-    .loader.show{opacity:1;pointer-events:auto}
-
-    body.light .loader{
-      background:rgba(255,255,255,.95);
-    }
-
-    .spinner{
-      width:50px;
-      height:50px;
-      border:5px solid #1e293b;
-      border-top-color:var(--accent);
-      border-radius:50%;
-      animation:spin 1s linear infinite;
-      margin-bottom:14px;
-    }
-
-    body.light .spinner{
-      border:5px solid #cbd5f5;
-      border-top-color:var(--accent);
-    }
-
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    .loader p{
-      font-weight:700;
-      color:#e5e7eb;
-    }
-    body.light .loader p{
-      color:#020617;
-    }
+    /* ❌ LOADER REMOVED COMPLETELY ❌ */
   </style>
 </head>
 
@@ -235,24 +58,11 @@
 <div id="sidebar" class="sidebar">
   <a class="side-btn" href="https://animetoki.com" target="_blank">All Anime</a>
   <a class="side-btn" href="https://t.me/AnimeChannelSakura" onclick="Telegram.WebApp.openTelegramLink('https://t.me/AnimeChannelSakura')">Main Channel</a>
-  <a class="side-btn" href="https://t.me/anime_toki" onclick="Telegram.WebApp.openTelegramLink('https://t.me/anime_toki')">Ongoing Anime</a>
-
   <div class="social">
-    <a href="https://www.facebook.com/profile.php?id=61580271211687" target="_blank">
-      <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png">
-    </a>
-    <a href="https://t.me/Ani_Animesh" target="_blank">
-      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
-    </a>
+    <a href="https://t.me/Ani_Animesh" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"></a>
   </div>
 </div>
-
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
-
-<div id="loader" class="loader">
-  <div class="spinner"></div>
-  <p>Loading...</p>
-</div>
 
 <div class="header">
   <div class="menu-btn" onclick="openMenu()">☰</div>
@@ -272,13 +82,9 @@
       <div class="title" id="anime">㊂ Anime</div>
       <div class="meta">
         <span id="episode">⊙ Episode: --</span>
-        <span>⊙ Audio: Japanese</span>
-        <span>⊙ Subtitle: English</span>
-        <span>⊙ Codec: HEVC</span>
         <span id="resolution">⊙ Resolution: --</span>
-        <span>⊙ Source: AnimeToki.com</span>
       </div>
-      <button class="play-btn" onclick="go()">▶️ Watch</button>
+      <button id="watchBtn" class="play-btn" onclick="go()">▶️ Watch</button>
     </div>
   </div>
 </div>
@@ -289,114 +95,97 @@
 
   let globalDriveId = "";
 
-  // Styling Functions
+  // Styling
   function r(){return Math.floor(Math.random()*200)+40}
   document.documentElement.style.setProperty("--accent",`rgb(${r()},${r()},${r()})`);
   document.documentElement.style.setProperty("--accent-dark",`rgb(${r()/2},${r()/2},${r()/2})`);
-
   if(tg.colorScheme==="light") document.body.classList.add("light");
 
-  function toggleTheme(){
-    document.body.classList.toggle("light");
-    setLogo();
-  }
-
+  function toggleTheme(){ document.body.classList.toggle("light"); setLogo(); }
   function setLogo(){
-    const dark="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
-    const light="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
-    document.getElementById("logo").src =
-      document.body.classList.contains("light") ? light : dark;
+    const d="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_213022123.webp";
+    const l="https://animetoki.com/wp-content/uploads/2025/04/img_20250429_210331314.webp";
+    document.getElementById("logo").src = document.body.classList.contains("light") ? l : d;
   }
   setLogo();
 
   function openMenu(){sidebar.classList.add("show");overlay.classList.add("show")}
   function closeMenu(){sidebar.classList.remove("show");overlay.classList.remove("show")}
-
   function search(){
     const q=document.getElementById("searchBox").value.trim();
     if(q) window.open("https://animetoki.com/?s="+encodeURIComponent(q),"_blank");
   }
 
-  // Parse Parameters
+  // Params
   try {
     const startParam = tg.initDataUnsafe.start_param || "";
     if(startParam){
       const decoded=atob(startParam.replace(/-/g,'+').replace(/_/g,'/'));
       const parts=decoded.split("|");
-
       document.getElementById("anime").innerText="㊂ "+(parts[0]||"Unknown");
       document.getElementById("episode").innerText="⊙ Episode: "+(parts[1]||"--").replace("Episode ","");
       globalDriveId = parts[2] || ""; 
       document.getElementById("resolution").innerText="⊙ Resolution: "+(parts[3]||"HD");
       document.getElementById("poster").src=parts[4]||"";
     }
-  } catch(e) {
-    console.log("Param Error", e);
-  }
+  } catch(e) { console.log(e); }
 
   // ===============================================
-  // ✅ FINAL AD LOGIC (Robust & Safe)
+  // ✅ FINAL LOGIC: NO LOADER + 5 SEC WAIT
   // ===============================================
 
   function go(){
-    // ১. ভিডিও লিংক চেক করা
-    if(!globalDriveId){
-        alert("Video Link Not Found!");
-        return;
-    }
+    if(!globalDriveId){ alert("Link not found!"); return; }
 
-    const loader = document.getElementById("loader");
-    const loaderText = document.querySelector(".loader p");
+    const btn = document.getElementById("watchBtn");
     
-    // লোডার চালু
-    loader.classList.add("show");
-    loaderText.innerText = "Processing..."; 
+    // বাটনে ডবল ক্লিক ঠেকানো এবং ইউজারকে জানানো
+    if(btn.disabled) return; 
+    btn.disabled = true;
+    btn.innerText = "Please Wait..."; // লোডারের বদলে বাটনের টেক্সট বদলাবে
 
-    // ফ্ল্যাগ যাতে দুইবার ভিডিও না চলে
-    let adProcessed = false;
+    let isRedirecting = false;
 
-    // ভিডিও পেজে নিয়ে যাওয়ার ফাংশন
-    const startVideo = () => {
-        if(adProcessed) return; // কাজ হয়ে গেলে থামো
-        adProcessed = true;
+    // ভিডিও পেজে যাওয়ার ফাংশন
+    const redirect = () => {
+        if(isRedirecting) return;
+        isRedirecting = true;
         
-        // লোডার বন্ধ করে ভিডিও পেজে যাও
-        loader.classList.remove("show");
+        // ভিডিও চালু করা
         location.href = "player.html?id=" + globalDriveId;
     };
 
-    // ২. সেফটি টাইমার (২.৫ সেকেন্ড)
-    // যদি ২.৫ সেকেন্ডের মধ্যে অ্যাড লোড না হয়, তবে বাদ দিয়ে ভিডিও চলবে
+    // ১. ৫ সেকেন্ড টাইমার (Safety Timeout)
     const timer = setTimeout(() => {
-        console.log("Ad timeout: Skipping to video...");
-        startVideo();
+        console.log("5 seconds passed, skipping ad...");
+        redirect();
     }, 5000);
 
-    // ৩. অ্যাড দেখানোর চেষ্টা
+    // ২. Monetag অ্যাড লোড করার চেষ্টা
     try {
         if (typeof show_10350993 === 'function') {
+            console.log("Checking for ads...");
+            
             show_10350993().then(() => {
-                // অ্যাড দেখা সাকসেসফুল
-                console.log("Ad Success");
+                // অ্যাড সাকসেসফুলি দেখালে বা ক্লোজ করলে
+                console.log("Ad Finished");
                 clearTimeout(timer); // টাইমার থামাও
-                startVideo(); // ভিডিও চালাও
+                redirect();
             }).catch((e) => {
-                // অ্যাড লোড ফেইল বা নো-ফিল
-                console.error("Ad Failed/No Fill:", e);
+                // অ্যাড না থাকলে (No Fill)
+                console.log("No Ad / Error");
                 clearTimeout(timer);
-                startVideo();
+                redirect();
             });
         } else {
-            // স্ক্রিপ্ট লোড হয়নি (AdBlock বা Network)
-            console.log("Ad script not ready");
+            // স্ক্রিপ্ট না থাকলে
+            console.log("Script missing");
             clearTimeout(timer);
-            startVideo();
+            redirect();
         }
     } catch (err) {
-        // অন্য কোনো এরর
-        console.error("Unknown Error:", err);
         clearTimeout(timer);
-        startVideo();
+        redirect();
     }
   }
 </script>
