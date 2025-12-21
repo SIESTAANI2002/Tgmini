@@ -5,6 +5,8 @@
   <title>Anime Player</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+  <script src='//libtl.com/sdk.js' data-zone='10350993' data-sdk='show_10350993' data-cfasync="false"></script>
+
   <style>
     :root{
       --accent:#3b82f6;
@@ -23,18 +25,28 @@
     /* ===== HEADER ===== */
     .header{
       padding:12px;
-      text-align:center;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       background:rgba(2,6,23,.85);
       backdrop-filter:blur(6px);
       border-bottom:1px solid rgba(255,255,255,.12);
+    }
+    
+    .back-btn {
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0 8px;
     }
 
     .title{
       font-size:14px;
       font-weight:800;
       line-height:1.4;
-      letter-spacing:.3px;
       opacity:.95;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* ===== PLAYER ===== */
@@ -62,10 +74,16 @@
       cursor:pointer;
       transition:.2s ease;
       user-select:none;
+      color: white;
     }
 
     .btn:active{
       transform:scale(.97);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .stream{
@@ -77,107 +95,116 @@
       background:linear-gradient(135deg,#3b82f6,#2563eb);
       box-shadow:0 6px 22px rgba(59,130,246,.45);
     }
-
-    /* ===== LOADER ===== */
-    .loader{
-      position:fixed;
-      inset:0;
-      background:rgba(2,6,23,.9);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      z-index:999;
-      opacity:0;
-      pointer-events:none;
-      transition:.3s;
-    }
-
-    .loader.show{
-      opacity:1;
-      pointer-events:auto;
-    }
-
-    .spinner{
-      width:54px;
-      height:54px;
-      border:5px solid #1e293b;
-      border-top-color:var(--accent);
-      border-radius:50%;
-      animation:spin 1s linear infinite;
-      margin-bottom:16px;
-    }
-
-    @keyframes spin{
-      to{transform:rotate(360deg)}
-    }
-
-    .loader p{
-      font-weight:700;
-      opacity:.9;
-    }
   </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
+  <div class="back-btn" onclick="history.back()">⬅️</div>
   <div class="title" id="title">Loading...</div>
 </div>
 
-<!-- PLAYER -->
 <div class="container">
-  <iframe id="player"></iframe>
+  <iframe id="player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
-  <div class="btn stream" onclick="openStream()">
+  <button id="streamBtn" class="btn stream" onclick="handleAdClick('stream')">
     ▶️ Stream Fullscreen
-  </div>
+  </button>
 
-  <div class="btn download" onclick="downloadFile()">
-    ⬇️ Download
-  </div>
-</div>
-
-<!-- LOADER -->
-<div id="loader" class="loader">
-  <div class="spinner"></div>
-  <p>Preparing your episode…</p>
+  <button id="dlBtn" class="btn download" onclick="handleAdClick('download')">
+    ⬇️ Download Episode
+  </button>
 </div>
 
 <script>
   const tg = Telegram.WebApp;
   tg.ready();
   tg.expand();
+  tg.BackButton.show();
+  tg.BackButton.onClick(() => history.back());
 
-  const raw = tg.initDataUnsafe?.start_param;
-  if(!raw){
-    document.body.innerHTML="❌ Invalid request";
-    throw new Error("No payload");
+  // ১. URL থেকে ডাটা সংগ্রহ করা
+  const params = new URLSearchParams(window.location.search);
+  const driveId = params.get("id");
+  const animeTitle = params.get("title") || "Anime Video";
+  const episodeNum = params.get("ep") || "";
+
+  // ২. টাইটেল এবং প্লেয়ার সেট করা
+  if(driveId){
+    document.getElementById("title").innerText = `${animeTitle} ${episodeNum ? "• " + episodeNum : ""}`;
+    document.getElementById("player").src = `https://drive.google.com/file/d/${driveId}/preview`;
+  } else {
+    document.getElementById("title").innerText = "Error: No Video Found";
   }
 
-  const decoded = atob(raw.replace(/-/g,'+').replace(/_/g,'/'));
-  const [title, episode, driveId, quality] = decoded.split("|");
+  // ==========================================
+  // ✅ AD LOGIC FOR ALL BUTTONS
+  // ==========================================
 
-  document.getElementById("title").innerText =
-    `${title} • ${episode} • ${quality}`;
+  function handleAdClick(type) {
+    let btn;
+    if (type === 'stream') btn = document.getElementById("streamBtn");
+    else btn = document.getElementById("dlBtn");
 
-  const previewUrl =
-    `https://drive.google.com/file/d/${driveId}/preview?rm=minimal`;
+    if (!driveId) { alert("Video source missing!"); return; }
+    
+    // বাটন লক করা
+    if(btn.disabled) return;
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Please Wait..."; // লোডারের বদলে টেক্সট
 
-  document.getElementById("player").src = previewUrl;
+    let actionDone = false;
 
-  function openStream(){
-    location.href = "stream.html";
-  }
+    // আসল কাজ করার ফাংশন (Action)
+    const performAction = () => {
+        if(actionDone) return;
+        actionDone = true;
 
-  function downloadFile(){
-    const downloadUrl =
-      `https://drive.google.com/uc?export=download&id=${driveId}`;
+        // বাটন রিসেট (যদি ইউজার ব্যাকে আসে)
+        btn.innerText = originalText;
+        btn.disabled = false;
 
-    Telegram.WebApp.openLink(downloadUrl,{
-      try_instant_view:false
-    });
+        if (type === 'stream') {
+             // Stream Logic
+             // এখানে আপনার stream.html পেজে নিয়ে যাবে
+             location.href = "stream.html"; 
+        } else {
+             // Download Logic
+             const downloadUrl = `https://drive.google.com/uc?export=download&id=${driveId}`;
+             tg.openLink(downloadUrl);
+        }
+    };
+
+    // ১. ৫ সেকেন্ড টাইমার (Safety)
+    const timer = setTimeout(() => {
+        console.log("Ad timeout, performing action...");
+        performAction();
+    }, 5000);
+
+    // ২. Monetag অ্যাড কল
+    try {
+        if (typeof show_10350993 === 'function') {
+            console.log("Loading Ad...");
+            show_10350993().then(() => {
+                console.log("Ad Finished");
+                clearTimeout(timer);
+                performAction();
+            }).catch((e) => {
+                console.log("Ad Failed/No Fill");
+                clearTimeout(timer);
+                performAction();
+            });
+        } else {
+            console.log("SDK not ready");
+            clearTimeout(timer);
+            performAction();
+        }
+    } catch (e) {
+        clearTimeout(timer);
+        performAction();
+    }
   }
 </script>
 
